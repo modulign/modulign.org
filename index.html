@@ -1,0 +1,1391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- © 2026 Vincent Gonzalez · modulign.org -->
+  <!-- ============================================================
+  // MODULIGN v1.1.0
+  // Public-facing homepage — DAG-OR standard site
+  // © 2026 Vincent Gonzalez · modulign.org
+  // ============================================================
+  //
+  // WORKFLOW STACK:
+  // 1. Load fonts + GA4
+  // 2. Render static hero, stat row, architecture sections
+  // 3. Fetch Zenodo MGN community → build doc cards + update DOI count
+  // 4. Fetch Supabase public stats → update live registry count
+  // 5. Stripe donate button opens checkout
+  //
+  // ASSET MANIFEST:
+  // - Google Fonts: Playfair Display, DM Mono, DM Sans
+  // - Zenodo API: /api/records/?q=parent.communities.ids:mgn
+  // - Supabase: kzjyokiiygryzlxbqwjv (public stats endpoint)
+  // - Stripe: pk_live_51TNcycGw6l9ZAxCayiIaqnRRl1GFBeTbmvu2ILG7xTe2QIrrk3HGoulRrdkUKPOC3EPkTo7i7RKMmQHucrOPLyip00DjqbNN8W
+  //
+  // BOOT ORDER:
+  // 1. DOM ready → static render
+  // 2. fetchZenodo() → doc grid + DOI stat
+  // 3. fetchRegistryStats() → live count stat
+  // ============================================================ -->
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-KF13KM0S78"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-KF13KM0S78');
+  </script>
+
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Modulign Standard — A Dimensional Address Grammar for Observable Reality</title>
+  <meta name="description" content="The Modulign Standard: a formal address grammar for any observable phenomenon. Open standard, free to implement." />
+  <meta name="author" content="Vincent Gonzalez" />
+
+  <meta property="og:title" content="Modulign Standard" />
+  <meta property="og:description" content="A Dimensional Address Grammar for Observable Reality. The first formal epistemic primitive for observational knowledge." />
+  <meta property="og:url" content="https://modulign.org" />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="https://modulign.org/og.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Modulign Standard" />
+  <meta name="twitter:description" content="A Dimensional Address Grammar for Observable Reality." />
+  <meta name="twitter:image" content="https://modulign.org/og.png" />
+
+  <link rel="canonical" href="https://modulign.org" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400;1,500&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet" />
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "Modulign",
+    "url": "https://modulign.org",
+    "sameAs": [
+      "https://orcid.org/0009-0004-7283-8598",
+      "https://zenodo.org/communities/mgn",
+      "https://github.com/modulign"
+    ]
+  }
+  </script>
+
+  <style>
+    :root {
+      --bg:         #0c0d0f;
+      --surface:    #111316;
+      --surface2:   #171a1e;
+      --border:     rgba(255,255,255,0.07);
+      --border2:    rgba(255,255,255,0.14);
+      --gold:       #c9a84c;
+      --gold-dim:   rgba(201,168,76,0.18);
+      --gold-line:  rgba(201,168,76,0.35);
+      /* FIXED: text contrast lifted to meet WCAG AA */
+      --text:       #f0ece4;
+      --text2:      #c8c4bc;
+      --text3:      #d4cfc8;
+      --blue:       #6a9fc5;
+      --blue-dim:   rgba(106,159,197,0.15);
+      --green:      #5aac7e;
+      --serif:      'Playfair Display', Georgia, 'Times New Roman', serif;
+      --mono:       'DM Mono', 'JetBrains Mono', monospace;
+      --sans:       'DM Sans', system-ui, sans-serif;
+      --r:          6px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: 16px; scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      font-weight: 300;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: inherit; text-decoration: none; }
+
+    nav {
+      position: sticky; top: 0; z-index: 200;
+      background: rgba(12,13,15,0.94);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      height: 58px;
+      display: flex; align-items: center;
+      padding: 0 40px;
+      justify-content: space-between;
+    }
+    .nav-left { display: flex; align-items: baseline; gap: 14px; }
+    .nav-wordmark {
+      font-family: var(--serif);
+      font-size: 17px;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      color: var(--text);
+    }
+    .nav-wordmark em { font-style: normal; color: var(--gold); }
+    .nav-links {
+      display: flex; gap: 28px; align-items: center;
+    }
+    .nav-links a {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text3);
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--gold); }
+    .nav-support {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--gold);
+      border: 1px solid var(--gold-line);
+      padding: 5px 14px;
+      border-radius: 3px;
+      transition: background 0.2s;
+      cursor: pointer;
+      background: transparent;
+    }
+    .nav-support:hover { background: var(--gold-dim); }
+
+    .hero {
+      min-height: 92vh;
+      display: flex; align-items: center;
+      padding: 80px 40px 60px;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-bg {
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse 60% 50% at 70% 40%, rgba(201,168,76,0.04) 0%, transparent 70%),
+        radial-gradient(ellipse 40% 60% at 20% 70%, rgba(74,127,165,0.05) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    .hero-grid {
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.018) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.018) 1px, transparent 1px);
+      background-size: 48px 48px;
+      mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%);
+      pointer-events: none;
+    }
+    .hero-inner {
+      max-width: 980px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+    }
+    .hero-tag {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 28px;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .hero-tag::before {
+      content: '';
+      display: inline-block;
+      width: 24px; height: 1px;
+      background: var(--gold-line);
+    }
+    .hero-title {
+      font-family: var(--serif);
+      font-size: clamp(42px, 6vw, 80px);
+      font-weight: 400;
+      line-height: 1.08;
+      color: var(--text);
+      margin-bottom: 20px;
+      letter-spacing: -0.01em;
+    }
+    .hero-title em {
+      font-style: italic;
+      color: rgba(240,236,228,0.6);
+    }
+    .hero-sub {
+      font-family: var(--sans);
+      font-size: clamp(15px, 2vw, 18px);
+      font-weight: 300;
+      color: var(--text2);
+      max-width: 560px;
+      line-height: 1.7;
+      margin-bottom: 48px;
+    }
+    .hero-actions {
+      display: flex; flex-wrap: wrap; gap: 12px;
+      margin-bottom: 64px;
+    }
+    .btn-primary {
+      background: var(--gold);
+      color: #0c0d0f;
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      font-weight: 500;
+      padding: 13px 28px;
+      border-radius: var(--r);
+      transition: opacity 0.2s, transform 0.15s;
+      display: inline-flex; align-items: center; gap: 8px;
+      border: none; cursor: pointer;
+    }
+    .btn-primary:hover { opacity: 0.88; transform: translateY(-1px); }
+    .btn-ghost {
+      border: 1px solid var(--border2);
+      color: var(--text2);
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 13px 28px;
+      border-radius: var(--r);
+      transition: border-color 0.2s, color 0.2s;
+      display: inline-flex; align-items: center; gap: 8px;
+      background: transparent; cursor: pointer;
+    }
+    .btn-ghost:hover { border-color: var(--gold-line); color: var(--text); }
+
+    .hero-address {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--text3);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 16px 20px;
+      line-height: 2;
+      max-width: 720px;
+      overflow-x: auto;
+    }
+    .hero-address .label {
+      display: block;
+      font-size: 9px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--text3);
+      margin-bottom: 8px;
+    }
+
+    .stat-row {
+      display: flex; flex-wrap: wrap;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      margin: 0 40px;
+    }
+    .stat-item {
+      flex: 1; min-width: 160px;
+      padding: 28px 32px;
+      border-right: 1px solid var(--border);
+    }
+    .stat-item:last-child { border-right: none; }
+    .stat-num {
+      font-family: var(--serif);
+      font-size: 36px;
+      font-weight: 400;
+      color: var(--gold);
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+    .stat-label {
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--text3);
+    }
+
+    .section {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 80px 40px;
+    }
+    .section-label {
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 0.26em;
+      text-transform: uppercase;
+      color: var(--gold);
+      opacity: 0.8;
+      margin-bottom: 12px;
+    }
+    .section-title {
+      font-family: var(--serif);
+      font-size: clamp(28px, 4vw, 44px);
+      font-weight: 400;
+      line-height: 1.15;
+      color: var(--text);
+      margin-bottom: 16px;
+    }
+    .section-sub {
+      font-family: var(--sans);
+      font-size: 16px;
+      font-weight: 300;
+      color: var(--text2);
+      max-width: 560px;
+      line-height: 1.7;
+      margin-bottom: 48px;
+    }
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 0 40px;
+    }
+
+    /* ── SUPPORT SECTION ── */
+    .support-band {
+      background: linear-gradient(135deg, var(--surface) 0%, rgba(201,168,76,0.06) 100%);
+      border-top: 1px solid var(--gold-line);
+      border-bottom: 1px solid var(--gold-line);
+      padding: 48px 40px;
+    }
+    .support-inner {
+      max-width: 1080px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 40px;
+      align-items: center;
+    }
+    .support-inner h2 {
+      font-family: var(--serif);
+      font-size: 26px;
+      font-weight: 400;
+      color: var(--text);
+      margin-bottom: 10px;
+    }
+    .support-inner p {
+      font-family: var(--sans);
+      font-size: 15px;
+      font-weight: 300;
+      color: var(--text2);
+      line-height: 1.7;
+      max-width: 520px;
+    }
+    .support-inner p strong {
+      color: var(--gold);
+      font-weight: 400;
+    }
+    .support-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+    .btn-donate {
+      background: var(--gold);
+      color: #0c0d0f;
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      font-weight: 500;
+      padding: 14px 32px;
+      border-radius: var(--r);
+      border: none;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.15s;
+      white-space: nowrap;
+    }
+    .btn-donate:hover { opacity: 0.88; transform: translateY(-1px); }
+    .btn-donate-ghost {
+      border: 1px solid var(--gold-line);
+      color: var(--gold);
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 10px 24px;
+      border-radius: var(--r);
+      background: transparent;
+      cursor: pointer;
+      transition: background 0.2s;
+      text-align: center;
+    }
+    .btn-donate-ghost:hover { background: var(--gold-dim); }
+
+    /* ── DOC GRID ── */
+    .doc-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(460px, 1fr));
+      gap: 16px;
+    }
+    .doc-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 28px 32px;
+      display: flex; flex-direction: column;
+      transition: border-color 0.25s, transform 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+    .doc-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--gold), transparent);
+      opacity: 0;
+      transition: opacity 0.25s;
+    }
+    .doc-card:hover { border-color: var(--border2); transform: translateY(-2px); }
+    .doc-card:hover::before { opacity: 1; }
+    .doc-card.featured {
+      border-color: var(--gold-line);
+      background: linear-gradient(135deg, var(--surface) 0%, rgba(201,168,76,0.04) 100%);
+    }
+    .doc-card.featured::before { opacity: 0.6; }
+    .doc-num {
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text3);
+      margin-bottom: 16px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .doc-doi { font-family: var(--mono); font-size: 9px; color: var(--blue); }
+    .doc-title {
+      font-family: var(--serif);
+      font-size: 20px;
+      font-weight: 500;
+      line-height: 1.3;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+    .doc-subtitle {
+      font-family: var(--serif);
+      font-size: 14px;
+      font-style: italic;
+      color: var(--text3);
+      margin-bottom: 16px;
+      line-height: 1.5;
+    }
+    .doc-desc {
+      font-family: var(--sans);
+      font-size: 13px;
+      font-weight: 300;
+      color: var(--text2);
+      line-height: 1.65;
+      flex: 1;
+      margin-bottom: 24px;
+    }
+    .doc-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 20px; }
+    .doc-tag {
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 3px 9px;
+      border-radius: 2px;
+      background: var(--surface2);
+      color: var(--text3);
+      border: 1px solid var(--border);
+    }
+    .doc-tag.gold { background: var(--gold-dim); color: var(--gold); border-color: var(--gold-line); }
+    .doc-tag.blue { background: var(--blue-dim); color: var(--blue); border-color: rgba(106,159,197,0.35); }
+    .doc-links { display: flex; flex-wrap: wrap; gap: 12px; }
+    .doc-link {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text3);
+      border: 1px solid var(--border);
+      padding: 7px 14px;
+      border-radius: 3px;
+      transition: all 0.2s;
+      display: inline-flex; align-items: center; gap: 6px;
+      background: transparent; cursor: pointer;
+    }
+    .doc-link:hover { border-color: var(--gold-line); color: var(--gold); }
+    .doc-link.primary { border-color: var(--gold-line); color: var(--gold); }
+    .doc-link.primary:hover { background: var(--gold-dim); }
+    .doc-link.copied { border-color: var(--green) !important; color: var(--green) !important; }
+
+    /* ── ARCHITECTURE ── */
+    .arch-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      overflow: hidden;
+      margin-bottom: 48px;
+    }
+    .arch-cell {
+      background: var(--surface);
+      padding: 24px 28px;
+      transition: background 0.2s;
+    }
+    .arch-cell:hover { background: var(--surface2); }
+    .arch-key { font-family: var(--mono); font-size: 13px; color: var(--gold); margin-bottom: 6px; }
+    .arch-name { font-family: var(--serif); font-size: 15px; color: var(--text); margin-bottom: 6px; }
+    .arch-desc { font-family: var(--sans); font-size: 12px; font-weight: 300; color: var(--text2); line-height: 1.55; }
+
+    .anatomy {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 32px;
+      overflow-x: auto;
+    }
+    .anatomy-label {
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text3);
+      margin-bottom: 20px;
+    }
+    .anatomy-code {
+      font-family: var(--mono);
+      font-size: 13px;
+      line-height: 2.4;
+      white-space: nowrap;
+      overflow-x: auto;
+      padding-bottom: 8px;
+    }
+    .seg { cursor: default; transition: opacity 0.15s; }
+    .seg:hover { opacity: 0.7; }
+    .s-ns   { color: var(--text2); }
+    .s-dom  { color: #e08c5a; }
+    .s-rlm  { color: var(--blue); }
+    .s-geo  { color: #7ab5d4; }
+    .s-nod  { color: #a0d4b4; }
+    .s-scl  { color: #c4a0d4; }
+    .s-med  { color: #d4a0a0; }
+    .s-obs  { color: #a0c4d4; }
+    .s-act  { color: var(--gold); }
+    .s-time { color: var(--text2); }
+    .s-evid { color: #6ab08a; }
+    .s-jur  { color: #b0a06a; }
+    .sep-c  { color: var(--text3); opacity: 0.5; }
+    .anatomy-legend {
+      display: flex; flex-wrap: wrap; gap: 8px 20px;
+      margin-top: 20px; padding-top: 20px;
+      border-top: 1px solid var(--border);
+    }
+    .legend-item {
+      display: flex; align-items: center; gap: 6px;
+      font-family: var(--mono); font-size: 9px;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--text3);
+    }
+    .legend-dot { width: 8px; height: 8px; border-radius: 50%; }
+
+    /* ── RESULTS ── */
+    .results-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 16px;
+    }
+    .result-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 28px;
+      transition: border-color 0.2s;
+    }
+    .result-card:hover { border-color: var(--border2); }
+    .result-num {
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 0.2em;
+      color: var(--text3);
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+    .result-name { font-family: var(--serif); font-size: 18px; color: var(--gold); margin-bottom: 10px; font-weight: 500; }
+    .result-formal {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--text3);
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 10px 14px;
+      margin-bottom: 14px;
+      line-height: 1.7;
+    }
+    .result-desc { font-family: var(--sans); font-size: 13px; font-weight: 300; color: var(--text2); line-height: 1.65; }
+
+    /* ── TIMELINE ── */
+    .timeline { position: relative; padding-left: 32px; }
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 7px; top: 6px; bottom: 6px;
+      width: 1px;
+      background: linear-gradient(to bottom, var(--gold-line), transparent);
+    }
+    .tl-item { position: relative; margin-bottom: 36px; }
+    .tl-item::before {
+      content: '';
+      position: absolute;
+      left: -27px; top: 6px;
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--gold);
+      box-shadow: 0 0 0 3px rgba(201,168,76,0.15);
+    }
+    .tl-item.dim::before { background: var(--text3); box-shadow: none; }
+    .tl-date { font-family: var(--mono); font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text3); margin-bottom: 6px; }
+    .tl-title { font-family: var(--serif); font-size: 17px; color: var(--text); margin-bottom: 4px; }
+    .tl-desc { font-family: var(--sans); font-size: 13px; font-weight: 300; color: var(--text2); line-height: 1.6; }
+    .tl-doi { font-family: var(--mono); font-size: 11px; color: var(--blue); }
+    .tl-status {
+      display: inline-block;
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 2px 8px;
+      border-radius: 2px;
+      margin-top: 6px;
+    }
+    .status-live { background: rgba(90,172,126,0.2); color: var(--green); }
+    .status-review { background: var(--blue-dim); color: var(--blue); }
+    .status-prep { background: rgba(201,168,76,0.12); color: var(--gold); }
+    .status-next { background: var(--surface2); color: var(--text3); border: 1px solid var(--border); }
+
+    /* ── REGISTRY CALLOUT ── */
+    .registry-callout {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 40px 48px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 32px;
+      align-items: center;
+    }
+    .registry-callout h3 { font-family: var(--serif); font-size: 24px; font-weight: 400; color: var(--text); margin-bottom: 10px; }
+    .registry-callout p { font-family: var(--sans); font-size: 14px; font-weight: 300; color: var(--text2); line-height: 1.65; max-width: 480px; }
+
+    /* ── OPEN STRIPE ── */
+    .open-stripe {
+      background: var(--gold-dim);
+      border-top: 1px solid var(--gold-line);
+      border-bottom: 1px solid var(--gold-line);
+      padding: 20px 40px;
+      display: flex; align-items: center; justify-content: center;
+      gap: 32px; flex-wrap: wrap;
+    }
+    .open-stripe-text {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gold);
+      display: flex; align-items: center; gap: 10px;
+    }
+    .open-stripe-text::before { content: '◆'; font-size: 6px; opacity: 0.5; }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      padding: 48px 40px;
+    }
+    .footer-inner {
+      max-width: 1080px; margin: 0 auto;
+      display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 40px;
+    }
+    .footer-col-title {
+      font-family: var(--mono); font-size: 9px; letter-spacing: 0.2em;
+      text-transform: uppercase; color: var(--text3); margin-bottom: 16px;
+    }
+    .footer-col p, .footer-col a {
+      font-family: var(--sans); font-size: 13px; font-weight: 300;
+      color: var(--text2); line-height: 1.8; display: block;
+    }
+    .footer-col a:hover { color: var(--gold); }
+    .footer-mono { font-family: var(--mono); font-size: 11px; color: var(--text3); line-height: 2; }
+    .footer-mono a { font-family: var(--mono); font-size: 11px; color: var(--blue); }
+    .footer-mono a:hover { color: var(--gold); }
+    .footer-bottom {
+      max-width: 1080px; margin: 32px auto 0;
+      padding-top: 24px; border-top: 1px solid var(--border);
+      display: flex; justify-content: space-between; align-items: center;
+      flex-wrap: wrap; gap: 12px;
+    }
+    .footer-copy { font-family: var(--mono); font-size: 9px; letter-spacing: 0.12em; color: var(--text3); }
+    .footer-tagline { font-family: var(--serif); font-size: 13px; font-style: italic; color: var(--text3); }
+    .orcid-badge { display: inline-flex; align-items: center; gap: 6px; font-family: var(--mono); font-size: 11px; color: var(--text2); transition: color 0.2s; }
+    .orcid-badge:hover { color: var(--gold); }
+
+    @media (max-width: 768px) {
+      nav { padding: 0 20px; }
+      .nav-links { gap: 14px; }
+      .nav-links a { font-size: 9px; }
+      .hero { padding: 60px 20px 40px; min-height: auto; }
+      .stat-row { margin: 0 20px; }
+      .stat-item { padding: 20px; min-width: 120px; }
+      .section { padding: 56px 20px; }
+      .divider { margin: 0 20px; }
+      .doc-grid { grid-template-columns: 1fr; }
+      .results-grid { grid-template-columns: 1fr; }
+      .registry-callout { grid-template-columns: 1fr; }
+      .support-inner { grid-template-columns: 1fr; }
+      .footer-inner { grid-template-columns: 1fr; gap: 28px; }
+      .open-stripe { padding: 16px 20px; }
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .hero-tag    { animation: fadeUp 0.6s ease both; animation-delay: 0.1s; }
+    .hero-title  { animation: fadeUp 0.7s ease both; animation-delay: 0.2s; }
+    .hero-sub    { animation: fadeUp 0.7s ease both; animation-delay: 0.35s; }
+    .hero-actions{ animation: fadeUp 0.7s ease both; animation-delay: 0.5s; }
+    .hero-address{ animation: fadeUp 0.7s ease both; animation-delay: 0.65s; }
+  </style>
+</head>
+<body>
+
+<nav role="navigation" aria-label="Main navigation">
+  <div class="nav-left">
+    <span class="nav-wordmark">MOD<em>U</em>LIGN</span>
+  </div>
+  <div class="nav-links">
+    <a href="#documents">Documents</a>
+    <a href="#architecture">Standard</a>
+    <a href="#results">Results</a>
+    <a href="#record">Record</a>
+    <a href="https://registry.modulign.org" aria-label="Open the Modulign Registry">Registry ↗</a>
+    <a href="https://github.com/modulign" aria-label="Modulign on GitHub">GitHub ↗</a>
+    <a href="#support" class="nav-support">Support ↗</a>
+  </div>
+</nav>
+
+<!-- ── HERO ── -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-inner">
+    <div class="hero-tag">Open Standard · Free to Implement · Formally Proven</div>
+    <h1 class="hero-title">
+      A Dimensional Address<br>
+      Grammar for<br>
+      <em>Observable Reality</em>
+    </h1>
+    <p class="hero-sub">
+      Every observable phenomenon — at any scale, in any domain, at any time —
+      addressed in a single grammar with explicit causal, epistemic,
+      jurisdictional, and evidentiary encoding.
+    </p>
+    <div class="hero-actions">
+      <a class="btn-primary" href="https://doi.org/10.5281/zenodo.19348704" aria-label="Read the Modulign Specification on Zenodo">
+        Read the Specification ↗
+      </a>
+      <a class="btn-ghost" href="#documents">All Documents</a>
+    </div>
+
+    <div class="hero-address">
+      <span class="label">Full Address Syntax — DAG-OR</span>
+      <div style="overflow-x:auto;">
+        <span class="seg s-ns">MGN·</span><span class="seg s-dom">URB·STR</span><span class="sep-c">·</span><span class="seg s-rlm">SR</span><span class="sep-c">/</span><span class="seg s-geo">NA/US/FL/MIA</span><span class="sep-c">·</span><span class="seg s-nod">A4F2</span><span class="sep-c">·</span><span class="seg s-scl">|HMN|</span><span class="sep-c">·</span><span class="seg s-med">:VID</span><span class="sep-c">·</span><span class="seg s-obs">%HUM·SEC:E</span><span class="sep-c">·</span><span class="seg s-act">.D-I</span><span class="sep-c">@</span><span class="seg s-time">2026-03-31T11:00:00Z</span><span class="sep-c">·</span><span class="seg s-evid">^EVID·^VFYD</span><span class="sep-c">·</span><span class="seg s-jur">§US-FL</span>
+      </div>
+      <div class="anatomy-legend" style="margin-top:12px;padding-top:12px;">
+        <span class="legend-item"><span class="legend-dot" style="background:#f0ece4;"></span>Namespace</span>
+        <span class="legend-item"><span class="legend-dot" style="background:#e08c5a;"></span>Domain</span>
+        <span class="legend-item"><span class="legend-dot" style="background:#7ab5d4;"></span>Realm + Locus</span>
+        <span class="legend-item"><span class="legend-dot" style="background:#a0d4b4;"></span>Node</span>
+        <span class="legend-item"><span class="legend-dot" style="background:#c4a0d4;"></span>Scale</span>
+        <span class="legend-item"><span class="legend-dot" style="background:#d4a0a0;"></span>Medium</span>
+        <span class="legend-item"><span class="legend-dot" style="background:#a0c4d4;"></span>Observer</span>
+        <span class="legend-item"><span class="legend-dot" style="background:#c9a84c;"></span>Activity</span>
+        <span class="legend-item"><span class="legend-dot" style="background:#6ab08a;"></span>Evidence Grade</span>
+        <span class="legend-item"><span class="legend-dot" style="background:#b0a06a;"></span>Jurisdiction</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── STATS ── -->
+<div class="stat-row">
+  <div class="stat-item">
+    <div class="stat-num" id="stat-docs">–</div>
+    <div class="stat-label">Zenodo DOIs · Published</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num" id="stat-registry">–</div>
+    <div class="stat-label">Registry Classifications · Live</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num">11</div>
+    <div class="stat-label">Domains · Universal Coverage</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num">9</div>
+    <div class="stat-label">Scale Tiers · Planck to Cosmic</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num">60yr</div>
+    <div class="stat-label">Gettier Problem · Structurally Dissolved</div>
+  </div>
+</div>
+
+<!-- ── OPEN STRIPE ── -->
+<div class="open-stripe">
+  <span class="open-stripe-text">Open Standard</span>
+  <span class="open-stripe-text">Free to Implement · No License Fee</span>
+  <span class="open-stripe-text">CC BY 4.0 · All Documents</span>
+  <span class="open-stripe-text">Modulign™ and MGN™ are trademarks of Vincent Gonzalez</span>
+</div>
+
+<!-- ── DOCUMENTS ── -->
+<div class="section" id="documents">
+  <div class="section-label">Published Scholarship</div>
+  <h2 class="section-title">The Corpus.</h2>
+  <p class="section-sub">
+    Every document is published under CC BY 4.0, archived on Zenodo
+    with a permanent DOI, and freely citable. Loaded live from the
+    <a href="https://zenodo.org/communities/mgn/" style="color:var(--blue);">MGN community</a>.
+  </p>
+  <div class="doc-grid" id="doc-grid">
+    <!-- JS populates this; static fallback below if fetch fails -->
+    <div class="doc-card featured">
+      <div class="doc-num">
+        <span>Document 01 · Foundation</span>
+        <span class="doc-doi">10.5281/zenodo.19348704</span>
+      </div>
+      <div class="doc-title">Modulign Standard</div>
+      <div class="doc-subtitle">A Dimensional Address Grammar for Observable Reality</div>
+      <div class="doc-desc">
+        The complete specification. Eleven domains, nine scale tiers,
+        five realm prefixes, three registries, ten system invariants,
+        and the full Trust Architecture.
+      </div>
+      <div class="doc-tags">
+        <span class="doc-tag gold">Specification</span>
+        <span class="doc-tag">Open Standard</span>
+        <span class="doc-tag">DAG-OR</span>
+      </div>
+      <div class="doc-links">
+        <a class="doc-link primary" href="https://doi.org/10.5281/zenodo.19348704" target="_blank" rel="noopener">Read on Zenodo ↗</a>
+        <a class="doc-link" href="Modulign.pdf">PDF</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ── ARCHITECTURE ── -->
+<div class="section" id="architecture">
+  <div class="section-label">The Grammar</div>
+  <h2 class="section-title">What a Modulign<br>Address Encodes</h2>
+  <p class="section-sub">
+    A minimum valid address — five required segments — is immediately useful.
+    Every additional segment adds precision without invalidating the base code.
+  </p>
+
+  <div class="arch-grid">
+    <div class="arch-cell">
+      <div class="arch-key">DOM · SUB</div>
+      <div class="arch-name">Domain</div>
+      <div class="arch-desc">What type of observable environment. Eleven domains: URB NAT TRN COM RES EVT SEC INF ENV BIO UNK.</div>
+    </div>
+    <div class="arch-cell">
+      <div class="arch-key">REALM / G1–G4</div>
+      <div class="arch-name">Locus</div>
+      <div class="arch-desc">Where in physical space. Five realms (SR AT AQ OR VR) × four-level geo hierarchy. Monotonic: no city without country.</div>
+    </div>
+    <div class="arch-cell">
+      <div class="arch-key">NOD</div>
+      <div class="arch-name">Node</div>
+      <div class="arch-desc">The specific instrument or site. Base36⁴ = 1,679,616 unique nodes per locus.</div>
+    </div>
+    <div class="arch-cell">
+      <div class="arch-key">|SCL|</div>
+      <div class="arch-name">Scale</div>
+      <div class="arch-desc">At what scale observed. Nine tiers: |QNT| |MLC| |BIO| |HMN| |GEO| |STL| |CSM| and more. Wrong scale = false classification.</div>
+    </div>
+    <div class="arch-cell">
+      <div class="arch-key">:MED</div>
+      <div class="arch-name">Medium</div>
+      <div class="arch-desc">How captured. Eleven codes including :SYN — the synthetic content primitive. VR/ + :SYN ↔ SyntheticContent = TRUE.</div>
+    </div>
+    <div class="arch-cell">
+      <div class="arch-key">%OBS</div>
+      <div class="arch-name">Observer</div>
+      <div class="arch-desc">Who classified and at what competence. %HUM %AUT %HYB × domain × :T :E :A. Gates ^EVID eligibility.</div>
+    </div>
+    <div class="arch-cell">
+      <div class="arch-key">@TIME</div>
+      <div class="arch-name">Timestamp</div>
+      <div class="arch-desc">ISO 8601. Required for ^EVID grade. Immutable in the append-only Observational Ledger.</div>
+    </div>
+    <div class="arch-cell">
+      <div class="arch-key">§JUR</div>
+      <div class="arch-name">Jurisdiction</div>
+      <div class="arch-desc">Governing legal framework. Constitutive in ^EVID classifications. Encodes which admissibility standard applies.</div>
+    </div>
+    <div class="arch-cell">
+      <div class="arch-key">^META</div>
+      <div class="arch-name">Evidence Grade</div>
+      <div class="arch-desc">^EVID: append-only, cryptographically signed, satisfies FRE 901(b)(9). ^PROV: provisional, excluded from proceedings.</div>
+    </div>
+  </div>
+
+  <div class="anatomy">
+    <div class="anatomy-label">Full Syntax · All Segments</div>
+    <div class="anatomy-code">
+      <span class="seg s-ns">MGN·</span><span class="seg s-dom">[DOM·SUB]</span><span class="sep-c">·</span><span class="seg s-rlm">[REALM</span><span class="sep-c">/</span><span class="seg s-geo">G1/G2/G3/G4]</span><span class="sep-c">·</span><span class="seg s-nod">[NOD]</span><span class="sep-c">·</span><span class="seg s-scl">|SCL|</span><span class="sep-c">·</span><span class="seg s-med">:[MED]</span><span class="sep-c">·</span><span class="seg s-obs">%[OBS]</span><span class="sep-c">·</span><span class="seg s-act">.[CAM]-[ACT]</span><span class="sep-c">@</span><span class="seg s-time">[TIME]</span><span class="sep-c">·</span><span class="seg s-evid">^[META]</span><span class="sep-c">·</span><span class="seg s-jur">§[JUR]</span><span class="sep-c">·</span><span class="seg s-obs">~[DYN]</span><span class="sep-c">·</span><span class="seg s-nod">+[BG]</span>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ── FORMAL RESULTS ── -->
+<div class="section" id="results">
+  <div class="section-label">Formal Results</div>
+  <h2 class="section-title">What the Architecture<br>Formally Proves</h2>
+  <p class="section-sub">
+    These results are consequences of the architecture, not motivations for it.
+    The Standard was built to classify television channels. The epistemology
+    was an accidental discovery during formalization.
+  </p>
+
+  <div class="results-grid">
+    <div class="result-card">
+      <div class="result-num">Theorem 4.1 · Formal Logic</div>
+      <div class="result-name">ATNA</div>
+      <div class="result-formal">
+        ∀ Stepₙ ∈ CDP : justificatory_input(Stepₙ) ⊆ F(ω)<br>
+        T(C) → F(ω) → J(C,ω) → C<br>
+        ∴ C is non-accidentally true when true. □
+      </div>
+      <div class="result-desc">
+        The Address-Theoretic Non-Accidentality Principle. A classification
+        produced by the full Decision Protocol cannot be accidentally true.
+        The structural precondition for Gettier cases does not exist in the architecture.
+      </div>
+    </div>
+    <div class="result-card">
+      <div class="result-num">Theorem 4.1C · Formal Logic</div>
+      <div class="result-name">Fake Barns Dissolved</div>
+      <div class="result-formal">
+        scale(T(C)) = |GEO| (regional)<br>
+        SCL(Henry) = |HMN| (perceptual)<br>
+        SCL(C) ≠ scale(T(C)) → C is FALSE. □
+      </div>
+      <div class="result-desc">
+        Goldman's fake barns case — which defeats every fourth-condition proposal —
+        is dissolved by scale-sensitivity. The architecture refuses to certify
+        barn-knowledge at the wrong scale.
+      </div>
+    </div>
+    <div class="result-card">
+      <div class="result-num">Invariant I6 · Standard</div>
+      <div class="result-name">Synthetic Content Primitive</div>
+      <div class="result-formal">
+        REALM = VR ∧ MED = SYN<br>
+        ↔ SyntheticContent(ω) = TRUE<br>
+        Not a tag. A structural biconditional.
+      </div>
+      <div class="result-desc">
+        VR/·:SYN is the first formal epistemic primitive for synthetic content.
+        The biconditional is architecturally enforced, not policy-dependent.
+      </div>
+    </div>
+    <div class="result-card">
+      <div class="result-num">Theorem 6.1 · Formal Logic</div>
+      <div class="result-name">Evidentiary Completeness</div>
+      <div class="result-formal">
+        ∀e ∈ {Auth, CoC, BestEvidence, Daubert}<br>
+        satisfied(e, C^EVID) = TRUE. □<br>
+        FRE 901(b)(9) · FRE 1001–1008 · FRE 702
+      </div>
+      <div class="result-desc">
+        Every ^EVID-grade classification satisfies all four foundational
+        legal admissibility requirements as constitutive outputs of the CDP.
+      </div>
+    </div>
+    <div class="result-card">
+      <div class="result-num">Corollary 4.1 · Formal Logic</div>
+      <div class="result-name">Zagzebski's Recipe Fails</div>
+      <div class="result-formal">
+        Recipe entry point: w' where X satisfied, T(C) fails.<br>
+        Under ATK: X = CDP requires F(ω).<br>
+        If T(C) fails, F(ω) severs. CDP cannot complete. □
+      </div>
+      <div class="result-desc">
+        Zagzebski (1994) proved no K = df true belief + X escapes Gettier cases
+        while X is fallible. ATK escapes by abandoning the K = df form entirely.
+      </div>
+    </div>
+    <div class="result-card">
+      <div class="result-num">Theorem 4.2 · Formal Logic</div>
+      <div class="result-name">Intersubjectivity</div>
+      <div class="result-formal">
+        CDP(ω,O₁) = CDP(ω,O₂)<br>
+        for O₁,O₂ with equivalent competence<br>
+        modulo threshold boundaries. □
+      </div>
+      <div class="result-desc">
+        Any two competent observers applying the CDP to the same observable
+        features must converge on the same classification. Procedural — not
+        metaphysical — intersubjectivity.
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ── PUBLIC RECORD / TIMELINE ── -->
+<div class="section" id="record">
+  <div class="section-label">Public Record</div>
+  <h2 class="section-title">Timestamped.<br>Permanent. Citable.</h2>
+  <p class="section-sub">
+    All documents are published to Zenodo with permanent DOIs.
+    Every record is version-controlled and freely citable.
+  </p>
+
+  <div class="timeline">
+    <div class="tl-item">
+      <div class="tl-date">March 31, 2026 · Zenodo</div>
+      <div class="tl-title">Modulign Standard</div>
+      <div class="tl-desc">Full specification published. Eleven domains, ten invariants, three registries, Trust Architecture, ATK/ATNA formulations. <span class="tl-doi">DOI: 10.5281/zenodo.19348704</span></div>
+      <span class="tl-status status-live">Live · CC BY 4.0</span>
+    </div>
+    <div class="tl-item">
+      <div class="tl-date">March 31, 2026 · Zenodo</div>
+      <div class="tl-title">The Formal Logic of Modulign</div>
+      <div class="tl-desc">All proofs published. ATNA, Gettier dissolution, Zagzebski corollary, Intersubjectivity, Scale-Sensitivity, Evidentiary Completeness. <span class="tl-doi">DOI: 10.5281/zenodo.19350848</span></div>
+      <span class="tl-status status-live">Live · CC BY 4.0</span>
+    </div>
+    <div class="tl-item">
+      <div class="tl-date">March 31, 2026 · Zenodo</div>
+      <div class="tl-title">Synthetic Content as Epistemic Category</div>
+      <div class="tl-desc">Five-case typology, EU AI Act Article 50 analysis, C2PA comparison, VR/·:SYN governance implications. <span class="tl-doi">DOI: 10.5281/zenodo.19351055</span></div>
+      <span class="tl-status status-live">Live · CC BY 4.0</span>
+    </div>
+    <div class="tl-item">
+      <div class="tl-date">March 31, 2026 · Zenodo</div>
+      <div class="tl-title">Modulign as Evidence</div>
+      <div class="tl-desc">Legal treatise. FRE admissibility proofs, Daubert mapping, chain-of-custody architecture. <span class="tl-doi">DOI: 10.5281/zenodo.19351250</span></div>
+      <span class="tl-status status-live">Live · CC BY 4.0</span>
+    </div>
+    <div class="tl-item">
+      <div class="tl-date">April 6, 2026 · Zenodo</div>
+      <div class="tl-title">Structural Dissolution of the Gettier Problem</div>
+      <div class="tl-desc">Address-Theoretic Epistemology. ATK formulation. Full formal proof of Gettier dissolution. <span class="tl-doi">DOI: 10.5281/zenodo.19432926</span></div>
+      <span class="tl-status status-live">Live · CC BY 4.0</span>
+    </div>
+    <div class="tl-item">
+      <div class="tl-date">April 13, 2026 · Zenodo</div>
+      <div class="tl-title">Dimensional Address as Rigid Designation</div>
+      <div class="tl-desc">How DAG-OR grounds reference without metaphysical posit. Kripke rigid designation satisfied structurally. <span class="tl-doi">DOI: 10.5281/zenodo.19557382</span></div>
+      <span class="tl-status status-live">Live · CC BY 4.0</span>
+    </div>
+    <div class="tl-item">
+      <div class="tl-date">April 13, 2026 · Zenodo</div>
+      <div class="tl-title">Automated Classifier Certification Framework</div>
+      <div class="tl-desc">AUT framework. Observer certification protocol for automated classifiers. <span class="tl-doi">DOI: 10.5281/zenodo.19559602</span></div>
+      <span class="tl-status status-live">Live · CC BY 4.0</span>
+    </div>
+    <div class="tl-item">
+      <div class="tl-date">April 14, 2026 · Zenodo</div>
+      <div class="tl-title">The Classification Deficit — EU AI Act Article 50</div>
+      <div class="tl-desc">The epistemic gap Article 50 cannot close and the formal standard that does. <span class="tl-doi">DOI: 10.5281/zenodo.19578571</span></div>
+      <span class="tl-status status-live">Live · CC BY 4.0</span>
+    </div>
+    <div class="tl-item">
+      <div class="tl-date">April 18, 2026 · Zenodo</div>
+      <div class="tl-title">Chain of Custody Formalisation in Digital Forensics</div>
+      <div class="tl-desc">^EVID architecture as registry-based evidentiary framework. NIST SP 800-86 / ISO 27037 alignment. <span class="tl-doi">DOI: 10.5281/zenodo.19642385</span></div>
+      <span class="tl-status status-live">Live · CC BY 4.0</span>
+    </div>
+    <div class="tl-item">
+      <div class="tl-date">April 18, 2026 · Zenodo</div>
+      <div class="tl-title">AI-Generated Evidence Admissibility</div>
+      <div class="tl-desc">Formal classification framework for synthetic content in legal proceedings. <span class="tl-doi">DOI: 10.5281/zenodo.19642437</span></div>
+      <span class="tl-status status-live">Live · CC BY 4.0</span>
+    </div>
+    <div class="tl-item">
+      <div class="tl-date">April 18, 2026 · Zenodo</div>
+      <div class="tl-title">Architecture, Epistemic Enforcement, and Universal Classification</div>
+      <div class="tl-desc">Implementation across sensor-heterogeneous environments. Live registry with 182,000+ classifications. <span class="tl-doi">DOI: 10.5281/zenodo.19642557</span></div>
+      <span class="tl-status status-live">Live · CC BY 4.0</span>
+    </div>
+    <div class="tl-item">
+      <div class="tl-date">April 18, 2026 · Zenodo</div>
+      <div class="tl-title">Inter-Rater Reliability of Automated Modulign Classifiers</div>
+      <div class="tl-desc">First empirical reliability study. κ = 0.847 overall across 234 streams, two independent classifiers. <span class="tl-doi">DOI: 10.5281/zenodo.19643322</span></div>
+      <span class="tl-status status-live">Live · CC BY 4.0</span>
+    </div>
+    <div class="tl-item">
+      <div class="tl-date">April 18, 2026 · Zenodo</div>
+      <div class="tl-title">On The Record: Toward a Formal Epistemology of Journalistic Attestation</div>
+      <div class="tl-desc">Formal basis for distinguishing attested from synthetic claims in public journalism. <span class="tl-doi">DOI: 10.5281/zenodo.19644070</span></div>
+      <span class="tl-status status-live">Live · CC BY 4.0</span>
+    </div>
+    <div class="tl-item dim">
+      <div class="tl-date">2026 · Under Review</div>
+      <div class="tl-title">Structural Dissolution of the Gettier Problem — Submitted to Analysis</div>
+      <div class="tl-desc">Peer review pending at Analysis (Oxford). The companion paper establishing the philosophical foundation of ATK.</div>
+      <span class="tl-status status-review">Under Review · Analysis (Oxford)</span>
+    </div>
+    <div class="tl-item dim">
+      <div class="tl-date">2026 · In Preparation</div>
+      <div class="tl-title">Dimensional Address as Rigid Designation — Prepared for Mind</div>
+      <div class="tl-desc">Target journal: Mind (Oxford). DAG-OR as the first structurally grounded theory of reference.</div>
+      <span class="tl-status status-prep">In Preparation · Mind (Oxford)</span>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ── REGISTRY CALLOUT ── -->
+<div class="section">
+  <div class="registry-callout">
+    <div>
+      <h3>The Observation Registry</h3>
+      <p>
+        A publicly queryable, append-only database of MGN-classified observations.
+        Query by MGN code, GSI-ID, domain, region, or keyword.
+        Every ^EVID record is cryptographically signed and tamper-evident.
+        182,000+ classifications. Live.
+      </p>
+    </div>
+    <div style="flex-shrink:0;">
+      <a class="btn-ghost" href="https://registry.modulign.org">Open Registry ↗</a>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ── SUPPORT ── -->
+<div class="support-band" id="support">
+  <div class="support-inner">
+    <div>
+      <h2>Support This Infrastructure</h2>
+      <p>
+        The Modulign Registry is free to all users — no subscriptions, no paywalls, no ads.
+        All 15 publications are open-access on Zenodo.
+        The entire annual cost of keeping this infrastructure publicly accessible is
+        <strong>$322.99</strong> — domain, server, and database.
+        If this work is useful to you, keeping it online is the ask.
+      </p>
+    </div>
+    <div class="support-buttons">
+      <button class="btn-donate" id="btn-donate-stripe" onclick="handleDonate()">
+        Support the Registry ↗
+      </button>
+      <a class="btn-donate-ghost" href="https://github.com/sponsors/modulign" target="_blank" rel="noopener">
+        GitHub Sponsors ↗
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-col">
+      <div class="footer-col-title">Core Documents</div>
+      <a href="https://doi.org/10.5281/zenodo.19348704" target="_blank" rel="noopener">Standard ↗</a>
+      <a href="https://doi.org/10.5281/zenodo.19350848" target="_blank" rel="noopener">Formal Logic ↗</a>
+      <a href="https://doi.org/10.5281/zenodo.19351055" target="_blank" rel="noopener">Synthetic Content ↗</a>
+      <a href="https://doi.org/10.5281/zenodo.19351250" target="_blank" rel="noopener">Modulign as Evidence ↗</a>
+      <a href="https://doi.org/10.5281/zenodo.19432926" target="_blank" rel="noopener">Gettier Dissolution ↗</a>
+      <a href="https://doi.org/10.5281/zenodo.19557382" target="_blank" rel="noopener">Rigid Designation ↗</a>
+      <a href="https://doi.org/10.5281/zenodo.19578571" target="_blank" rel="noopener">EU AI Act — Classification Deficit ↗</a>
+    </div>
+    <div class="footer-col">
+      <div class="footer-col-title">Applied Research</div>
+      <a href="https://doi.org/10.5281/zenodo.19642385" target="_blank" rel="noopener">Chain of Custody ↗</a>
+      <a href="https://doi.org/10.5281/zenodo.19642437" target="_blank" rel="noopener">AI Evidence Admissibility ↗</a>
+      <a href="https://doi.org/10.5281/zenodo.19642557" target="_blank" rel="noopener">CS Systems / Sensor Networks ↗</a>
+      <a href="https://doi.org/10.5281/zenodo.19643322" target="_blank" rel="noopener">Inter-Rater Reliability ↗</a>
+      <a href="https://doi.org/10.5281/zenodo.19644070" target="_blank" rel="noopener">Journalistic Attestation ↗</a>
+      <a href="https://doi.org/10.5281/zenodo.19559602" target="_blank" rel="noopener">Classifier Certification ↗</a>
+      <a href="https://zenodo.org/communities/mgn/" target="_blank" rel="noopener">All Publications on Zenodo ↗</a>
+    </div>
+    <div class="footer-col">
+      <div class="footer-col-title">Contact & Links</div>
+      <a href="mailto:VinceGonzalez@me.com">VinceGonzalez@me.com</a>
+      <a href="https://registry.modulign.org">registry.modulign.org</a>
+      <a href="https://github.com/modulign">github.com/modulign</a>
+      <a class="orcid-badge" href="https://orcid.org/0009-0004-7283-8598" target="_blank" rel="noopener">
+        <img src="https://orcid.org/sites/default/files/images/orcid_16x16.png" width="16" height="16" alt="ORCID iD">
+        0009-0004-7283-8598
+      </a>
+      <div style="margin-top:16px;">
+        <div class="footer-col-title">Cite as</div>
+        <p style="font-family:var(--mono);font-size:10px;color:var(--text3);line-height:1.8;">
+          Gonzalez, V. (2026).<br>
+          Modulign Standard.<br>
+          Zenodo. doi:10.5281/zenodo.19348704
+        </p>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div class="footer-copy">
+      © 2026 Vincent Gonzalez · modulign.org · Modulign™ and MGN™ are trademarks of Vincent Gonzalez · Open Standard · CC BY 4.0
+    </div>
+    <div class="footer-tagline">
+      Every observable thing deserves a precise, permanent, and intersubjective address.
+    </div>
+  </div>
+</footer>
+
+<script>
+// ============================================================
+// MODULIGN HOMEPAGE v1.1.0
+// Zenodo loader + Registry stats + Stripe donate
+// © 2026 Vincent Gonzalez · modulign.org
+// ============================================================
+//
+// WORKFLOW STACK:
+// 1. fetchZenodo() — populates doc grid, updates DOI count stat
+// 2. fetchRegistryStats() — updates live classification count
+// 3. handleDonate() — opens Stripe payment link
+//
+// BOOT ORDER:
+// 1. DOMContentLoaded → fetchZenodo()
+// 2. DOMContentLoaded → fetchRegistryStats()
+// ============================================================
+
+var STATE = {
+  docsLoaded: false,
+  statsLoaded: false,
+  stripeLink: 'https://donate.stripe.com/9B6cN52O559heCfdoM9IQ00'
+};
+
+// READS: none WRITES: STATE.docsLoaded, #doc-grid, #stat-docs
+function fetchZenodo() {
+  try {
+    fetch('https://zenodo.org/api/records/?q=parent.communities.ids:mgn&size=30&sort=mostrecent')
+      .then(function(res) {
+        if (!res.ok) throw new Error('Zenodo HTTP ' + res.status);
+        return res.json();
+      })
+      .then(function(data) {
+        var hits = (data.hits && data.hits.hits) ? data.hits.hits : [];
+        if (!hits.length) return;
+
+        var statEl = document.getElementById('stat-docs');
+        if (statEl) statEl.textContent = hits.length;
+
+        var grid = document.getElementById('doc-grid');
+        if (!grid) return;
+        grid.innerHTML = '';
+
+        hits.forEach(function(h, i) {
+          var m = h.metadata || {};
+          var doi = h.doi || '';
+          var url = doi ? 'https://doi.org/' + doi : '#';
+          var rawDesc = (m.description || '').replace(/<[^>]*>/g, '');
+          var desc = rawDesc.length > 280 ? rawDesc.slice(0, 280) + '…' : rawDesc;
+          var kw = (m.keywords || []).slice(0, 4);
+          var cite = 'Gonzalez, V. (2026). ' + (m.title || '') + '. Zenodo. https://doi.org/' + doi;
+          var featClass = i === 0 ? ' featured' : '';
+
+          grid.insertAdjacentHTML('beforeend',
+            '<div class="doc-card' + featClass + '">' +
+              '<div class="doc-num">' +
+                '<span>Document ' + String(i + 1).padStart(2, '0') + '</span>' +
+                '<span class="doc-doi">' + doi + '</span>' +
+              '</div>' +
+              '<div class="doc-title">' + (m.title || '') + '</div>' +
+              '<div class="doc-desc">' + desc + '</div>' +
+              '<div class="doc-tags">' +
+                kw.map(function(k){ return '<span class="doc-tag">' + k + '</span>'; }).join('') +
+              '</div>' +
+              '<div class="doc-links">' +
+                '<a class="doc-link primary" href="' + url + '" target="_blank" rel="noopener">Read on Zenodo ↗</a>' +
+                '<button class="doc-link" onclick="copyAPA(this)" data-cite="' + cite.replace(/"/g, '&quot;') + '">Copy APA</button>' +
+              '</div>' +
+            '</div>'
+          );
+        });
+
+        STATE.docsLoaded = true;
+      })
+      .catch(function(err) {
+        console.error('fetchZenodo:', err);
+      });
+  } catch(err) {
+    console.error('fetchZenodo outer:', err);
+  }
+}
+
+// READS: none WRITES: #stat-registry
+function fetchRegistryStats() {
+  try {
+    fetch('https://kzjyokiiygryzlxbqwjv.supabase.co/rest/v1/mgn_classifications?select=count', {
+      headers: {
+        'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt6anlva2lpeWdyeXpsaGJxd2p2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDMxMjU1MjcsImV4cCI6MjA1ODcwMTUyN30.EBSMxPdKMNLkNhB3pLzMsWfHxCxoJxelHlaMHGMsRlQ',
+        'Range': '0-0',
+        'Range-Unit': 'items',
+        'Prefer': 'count=exact'
+      }
+    })
+    .then(function(res) {
+      var count = res.headers.get('Content-Range');
+      if (count) {
+        var total = count.split('/')[1];
+        var el = document.getElementById('stat-registry');
+        if (el && total) {
+          var num = parseInt(total, 10);
+          el.textContent = num > 999 ? (Math.floor(num / 1000) + 'k+') : total;
+        }
+      }
+      STATE.statsLoaded = true;
+    })
+    .catch(function(err) {
+      console.error('fetchRegistryStats:', err);
+    });
+  } catch(err) {
+    console.error('fetchRegistryStats outer:', err);
+  }
+}
+
+// READS: STATE.stripeLink WRITES: none
+function handleDonate() {
+  try {
+    window.open(STATE.stripeLink, '_blank', 'noopener');
+  } catch(err) {
+    console.error('handleDonate:', err);
+  }
+}
+
+// READS: btn.dataset.cite WRITES: btn textContent
+function copyAPA(btn) {
+  try {
+    navigator.clipboard.writeText(btn.dataset.cite);
+    btn.textContent = 'Copied ✓';
+    btn.classList.add('copied');
+    setTimeout(function() {
+      btn.textContent = 'Copy APA';
+      btn.classList.remove('copied');
+    }, 2000);
+  } catch(err) {
+    console.error('copyAPA:', err);
+  }
+}
+
+// Boot
+fetchZenodo();
+fetchRegistryStats();
+</script>
+
+</body>
+</html>
