@@ -73,79 +73,142 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
   <div class="br">DAG-OR v3.1 · 55 CRONS · 35+ SOURCES</div>
 </div>
 <script>
-// Direct REST HEAD request — no edge function, no auth issues
-const BASE = 'https://kzjyokiiygryzlxbqwjv.supabase.co/rest/v1/';
-const KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt6anlva2lpeWdyeXpseGJxd2p2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4NTUwODYsImV4cCI6MjA5MDQzMTA4Nn0.S-fUJNL7Sux_WN3Vt7bd86_xhd1tgKtEVGffK1J2CBM';
-const H    = {'apikey':KEY,'Authorization':'Bearer '+KEY,'Prefer':'count=exact'};
+// ============================================================
+// MODULIGN REGISTRY COUNTER v18
+// Fixed: edge function as data source (not direct REST HEAD)
+// Fixed: progress bar math (was /10000, now /1000000)
+// Fixed: counter never goes to 0 — holds last known good value
+// © 2026 Vincent Gonzalez · modulign.org
+// ============================================================
 
-let prev={n:0,t:null},hist=[],last={cls:0,gsi:0,doc:0};
+var STATS_URL = 'https://kzjyokiiygryzlxbqwjv.supabase.co/functions/v1/mgn-public-stats';
+var TARGET = 1000000;
 
-const fmt = n => n>=1e9?(n/1e9).toFixed(2)+'B':n>=1e6?(n/1e6).toFixed(2)+'M':Number(n).toLocaleString('en-US');
+var STATE = {
+  last: null,   // last known good {classifications, gsi_ids, text_docs}
+  prev: null,   // {n, t} for rate calculation
+  hist: [],     // rolling rate samples
+  ready: false  // first successful fetch done
+};
 
-function anim(el,to){
-  const from=parseInt(el.getAttribute('data-n'))||0;
-  if(from===to)return;
-  el.setAttribute('data-n',to);
+function fmt(n) {
+  if (n >= 1e9) return (n / 1e9).toFixed(2) + 'B';
+  if (n >= 1e6) return (n / 1e6).toFixed(2) + 'M';
+  return Number(n).toLocaleString('en-US');
+}
+
+function anim(el, to) {
+  var from = parseInt(el.getAttribute('data-n')) || 0;
+  if (from === to) return;
+  el.setAttribute('data-n', to);
   el.classList.add('tick');
-  const t0=performance.now();
-  (function s(now){
-    const p=Math.min((now-t0)/900,1),e=1-Math.pow(1-p,3);
-    el.textContent=fmt(Math.round(from+(to-from)*e));
-    p<1?requestAnimationFrame(s):(el.textContent=fmt(to),el.classList.remove('tick'));
+  var t0 = performance.now();
+  (function s(now) {
+    var p = Math.min((now - t0) / 900, 1);
+    var e = 1 - Math.pow(1 - p, 3);
+    el.textContent = fmt(Math.round(from + (to - from) * e));
+    if (p < 1) {
+      requestAnimationFrame(s);
+    } else {
+      el.textContent = fmt(to);
+      el.classList.remove('tick');
+    }
   })(performance.now());
 }
 
-async function getCount(table){
-  const r=await fetch(BASE+table+'?select=*&limit=1',{method:'HEAD',headers:H});
-  const cr=r.headers.get('content-range');
-  return cr?parseInt(cr.split('/')[1])||0:0;
+function render(cls, gsi, doc) {
+  var now = Date.now();
+
+  // Rate calculation — only when count is growing
+  if (STATE.prev && cls > STATE.prev.n) {
+    var rate = (cls - STATE.prev.n) / ((now - STATE.prev.t) / 60000);
+    STATE.hist.push(rate);
+    if (STATE.hist.length > 8) STATE.hist.shift();
+  }
+  STATE.prev = {n: cls, t: now};
+
+  // Main counter
+  anim(document.getElementById('num'), cls);
+
+  // Sub-stats
+  document.getElementById('s-gsi').textContent = fmt(gsi);
+  document.getElementById('s-doc').textContent = fmt(doc);
+
+  // Rate + ETA
+  if (STATE.hist.length > 0) {
+    var avgRate = STATE.hist.reduce(function(a, b) { return a + b; }) / STATE.hist.length;
+    document.getElementById('s-rate').textContent = fmt(Math.round(avgRate));
+    document.getElementById('rt').textContent = '↑ ' + fmt(Math.round(avgRate)) + ' REC/MIN';
+    var rem = TARGET - cls;
+    if (rem > 0) {
+      var m = rem / avgRate;
+      document.getElementById('s-eta').textContent =
+        m < 60 ? Math.round(m) + 'M' :
+        m < 1440 ? (m / 60).toFixed(1) + 'H' :
+        (m / 1440).toFixed(1) + 'D';
+    } else {
+      document.getElementById('s-eta').textContent = '🏆';
+    }
+  }
+
+  // Progress bar — FIXED: divide by TARGET (1,000,000) not 10,000
+  var pct = Math.min(cls / TARGET * 100, 100).toFixed(2);
+  document.getElementById('pf').style.width = pct + '%';
+  document.getElementById('pct').textContent = pct + '% TO 1,000,000';
+
+  // Milestone message
+  document.getElementById('ms').textContent =
+    cls >= 1000000 ? '🏆 1,000,000 ACHIEVED — GUINNESS RECORD' :
+    cls >= 750000  ? 'MILESTONE: 750K — FINAL STRETCH' :
+    cls >= 500000  ? 'MILESTONE: 500K PASSED' :
+    cls >= 250000  ? 'MILESTONE: 250K PASSED' :
+    cls >= 100000  ? 'RECORD ATTEMPT UNDERWAY' :
+    'RECORD ATTEMPT IN PROGRESS — MODULIGN REGISTRY';
+
+  // Timestamp
+  document.getElementById('ts').textContent =
+    new Date().toISOString().replace('T', ' ').slice(0, 19) + ' UTC';
 }
 
-async function tick(){
-  try{
-    const [cls,gsi,doc]=await Promise.all([
-      getCount('mgn_classifications'),
-      getCount('mgn_gsi'),
-      getCount('mgn_text_documents')
-    ]);
-    const now=Date.now();
-    if(cls>0){
-      if(prev.t&&cls>prev.n) hist.push((cls-prev.n)/((now-prev.t)/60000));
-      if(hist.length>8)hist.shift();
-      last={cls,gsi,doc};
+async function tick() {
+  try {
+    var res = await fetch(STATS_URL, {
+      method: 'GET',
+      headers: {'Content-Type': 'application/json'}
+    });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    var data = await res.json();
+
+    var cls = data.classifications || 0;
+    var gsi = data.gsi_ids || 0;
+    var doc = data.text_docs || 0;
+
+    // Only update if we got a real number — never render 0 over a known good value
+    if (cls > 0) {
+      STATE.last = {cls: cls, gsi: gsi, doc: doc};
+      STATE.ready = true;
+      render(cls, gsi, doc);
+    } else if (STATE.ready && STATE.last) {
+      // Got 0 back — hold last known good, don't overwrite
+      document.getElementById('rt').textContent = '↑ HOLDING...';
     }
-    const c=last.cls,g=last.gsi,d=last.doc;
-    if(c>0){
-      anim(document.getElementById('num'),c);
-      document.getElementById('s-gsi').textContent=fmt(g);
-      document.getElementById('s-doc').textContent=fmt(d);
-      const rate=hist.length?hist.reduce((a,b)=>a+b)/hist.length:null;
-      if(rate){
-        document.getElementById('s-rate').textContent=fmt(Math.round(rate));
-        document.getElementById('rt').textContent='↑ '+fmt(Math.round(rate))+' REC/MIN';
-        const rem=1000000-c;
-        if(rem>0){const m=rem/rate;document.getElementById('s-eta').textContent=m<60?Math.round(m)+'M':m<1440?(m/60).toFixed(1)+'H':(m/1440).toFixed(1)+'D';}
-        else document.getElementById('s-eta').textContent='🏆';
-      }
-      const pct=Math.min(c/10000,100).toFixed(1);
-      document.getElementById('pf').style.width=pct+'%';
-      document.getElementById('pct').textContent=pct+'% TO 1,000,000';
-      document.getElementById('ms').textContent=
-        c>=1000000?'🏆 1,000,000 ACHIEVED — GUINNESS RECORD':
-        c>=750000?'MILESTONE: 750K — FINAL STRETCH':
-        c>=500000?'MILESTONE: 500K PASSED':
-        c>=250000?'MILESTONE: 250K PASSED':
-        c>=100000?'RECORD ATTEMPT UNDERWAY':'RECORD ATTEMPT IN PROGRESS — MODULIGN REGISTRY';
-      document.getElementById('ts').textContent=new Date().toISOString().replace('T',' ').slice(0,19)+' UTC';
-      if(cls>0) prev={n:cls,t:now};
-    }
-  }catch(e){document.getElementById('rt').textContent='↑ RETRYING...';}
+  } catch(e) {
+    // Network error — hold last known good, show retry
+    document.getElementById('rt').textContent = '↑ RETRYING...';
+  }
 }
 
-setInterval(()=>{const n=new Date(),p=x=>String(x).padStart(2,'0');document.getElementById('clk').textContent=p(n.getUTCHours())+':'+p(n.getUTCMinutes())+':'+p(n.getUTCSeconds())+' UTC';},1000);
+// Clock
+setInterval(function() {
+  var n = new Date();
+  var p = function(x) { return String(x).padStart(2, '0'); };
+  document.getElementById('clk').textContent =
+    p(n.getUTCHours()) + ':' + p(n.getUTCMinutes()) + ':' + p(n.getUTCSeconds()) + ' UTC';
+}, 1000);
 
+// Run immediately then every 8 seconds
 tick();
-setInterval(tick,8000);
+setInterval(tick, 8000);
 </script>
 </body>
 </html>
