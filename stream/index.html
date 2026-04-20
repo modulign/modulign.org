@@ -2,158 +2,150 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MODULIGN REGISTRY — LIVE</title>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:wght@400;700&family=Barlow+Condensed:wght@300;400;600;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:wght@400;700&family=Barlow+Condensed:wght@300;600;800&display=swap" rel="stylesheet">
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  :root { --gold:#C9A84C; --gold2:#F0C96A; --dark:#0A0A0A; --text:#E8E4DC; --muted:#555; --green:#52E07C; }
-  html,body { width:100%; height:100%; background:var(--dark); color:var(--text); font-family:'Barlow Condensed',sans-serif; overflow:hidden; }
-  body::before { content:''; position:fixed; inset:0; background-image:linear-gradient(rgba(201,168,76,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(201,168,76,0.04) 1px,transparent 1px); background-size:60px 60px; animation:gridshift 20s linear infinite; z-index:0; }
-  @keyframes gridshift { 0%{background-position:0 0} 100%{background-position:60px 60px} }
-  .wrapper { position:relative; z-index:1; width:100vw; height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; }
-  .top-bar { position:fixed; top:0; left:0; right:0; height:56px; display:flex; align-items:center; justify-content:space-between; padding:0 40px; border-bottom:1px solid rgba(201,168,76,0.2); background:rgba(10,10,10,0.95); }
-  .logo { font-family:'Bebas Neue',sans-serif; font-size:28px; letter-spacing:0.12em; color:var(--gold); }
-  .logo span { color:var(--text); opacity:0.4; }
-  .live-badge { display:flex; align-items:center; gap:8px; font-family:'Space Mono',monospace; font-size:11px; letter-spacing:0.2em; color:var(--green); }
-  .dot { width:8px; height:8px; background:var(--green); border-radius:50%; animation:pulse 1.5s ease-in-out infinite; box-shadow:0 0 8px var(--green); }
-  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
-  .clock { font-family:'Space Mono',monospace; font-size:11px; color:var(--muted); letter-spacing:0.1em; }
-  .label-top { font-family:'Barlow Condensed',sans-serif; font-weight:300; font-size:18px; letter-spacing:0.5em; text-transform:uppercase; color:var(--muted); margin-bottom:8px; text-align:center; }
-  .main-number { font-family:'Bebas Neue',sans-serif; font-size:clamp(80px,14vw,200px); line-height:0.9; color:var(--text); text-align:center; transition:color 0.3s; }
-  .main-number.ticking { color:var(--gold2); }
-  .label-bottom { font-family:'Barlow Condensed',sans-serif; font-weight:600; font-size:22px; letter-spacing:0.35em; text-transform:uppercase; color:var(--gold); margin-top:12px; text-align:center; }
-  .divider { width:300px; height:1px; background:linear-gradient(90deg,transparent,var(--gold),transparent); margin:32px auto; opacity:0.6; }
-  .stats-row { display:flex; gap:60px; align-items:center; justify-content:center; }
-  .stat { text-align:center; }
-  .stat-value { font-family:'Bebas Neue',sans-serif; font-size:36px; color:var(--text); letter-spacing:0.05em; line-height:1; }
-  .stat-label { font-family:'Space Mono',monospace; font-size:9px; letter-spacing:0.2em; color:var(--muted); text-transform:uppercase; margin-top:4px; }
-  .sep { width:1px; height:40px; background:rgba(201,168,76,0.2); }
-  .prog { width:600px; max-width:90vw; margin-top:40px; }
-  .prog-labels { display:flex; justify-content:space-between; font-family:'Space Mono',monospace; font-size:10px; color:var(--muted); margin-bottom:8px; }
-  .prog-track { width:100%; height:4px; background:rgba(255,255,255,0.06); border-radius:2px; overflow:hidden; }
-  .prog-fill { height:100%; background:linear-gradient(90deg,var(--gold),var(--gold2)); border-radius:2px; transition:width 1s ease; }
-  .milestone { text-align:center; font-family:'Space Mono',monospace; font-size:10px; color:var(--gold); letter-spacing:0.2em; margin-top:10px; }
-  .ts { font-family:'Space Mono',monospace; font-size:10px; color:var(--muted); margin-top:16px; text-align:center; }
-  .ts strong { color:rgba(201,168,76,0.7); }
-  .err { font-family:'Space Mono',monospace; font-size:10px; color:#E05252; margin-top:8px; text-align:center; min-height:16px; }
-  .bottom-bar { position:fixed; bottom:0; left:0; right:0; height:48px; display:flex; align-items:center; justify-content:space-between; padding:0 40px; border-top:1px solid rgba(201,168,76,0.1); background:rgba(10,10,10,0.95); }
-  .bl { font-family:'Space Mono',monospace; font-size:10px; color:var(--muted); }
-  .bl strong { color:var(--gold); }
-  .rate { font-family:'Space Mono',monospace; font-size:11px; color:var(--green); }
-  .br { font-family:'Space Mono',monospace; font-size:10px; color:var(--muted); }
-  body::after { content:''; position:fixed; inset:0; background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.03) 2px,rgba(0,0,0,0.03) 4px); pointer-events:none; z-index:999; }
-  .c { position:fixed; width:20px; height:20px; opacity:0.3; }
-  .c.tl { top:60px; left:8px; border-top:1px solid var(--gold); border-left:1px solid var(--gold); }
-  .c.tr { top:60px; right:8px; border-top:1px solid var(--gold); border-right:1px solid var(--gold); }
-  .c.bl2 { bottom:52px; left:8px; border-bottom:1px solid var(--gold); border-left:1px solid var(--gold); }
-  .c.br2 { bottom:52px; right:8px; border-bottom:1px solid var(--gold); border-right:1px solid var(--gold); }
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--gold:#C9A84C;--gold2:#F0C96A;--dark:#0A0A0A;--text:#E8E4DC;--dim:#888;--green:#52E07C}
+html,body{width:100%;height:100%;background:var(--dark);color:var(--text);font-family:'Barlow Condensed',sans-serif;overflow:hidden}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(201,168,76,0.05) 1px,transparent 1px),linear-gradient(90deg,rgba(201,168,76,0.05) 1px,transparent 1px);background-size:60px 60px;animation:gs 20s linear infinite;z-index:0}
+@keyframes gs{0%{background-position:0 0}100%{background-position:60px 60px}}
+.wrap{position:relative;z-index:1;width:100vw;height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.top{position:fixed;top:0;left:0;right:0;height:54px;display:flex;align-items:center;justify-content:space-between;padding:0 40px;border-bottom:1px solid rgba(201,168,76,0.2);background:rgba(10,10,10,0.97);z-index:10}
+.logo{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:.12em;color:var(--gold)}
+.badge{display:flex;align-items:center;gap:8px;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.2em;color:var(--green)}
+.dot{width:8px;height:8px;background:var(--green);border-radius:50%;animation:p 1.5s ease-in-out infinite;box-shadow:0 0 8px var(--green)}
+@keyframes p{0%,100%{opacity:1}50%{opacity:.3}}
+.clk{font-family:'Space Mono',monospace;font-size:11px;color:var(--dim);letter-spacing:.1em}
+.lbl-top{font-family:'Barlow Condensed',sans-serif;font-weight:300;font-size:16px;letter-spacing:.5em;text-transform:uppercase;color:var(--dim);margin-bottom:8px;text-align:center}
+.num{font-family:'Bebas Neue',sans-serif;font-size:clamp(90px,15vw,210px);line-height:.9;color:var(--text);text-align:center;transition:color .3s}
+.num.tick{color:var(--gold2)}
+.lbl-bot{font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:20px;letter-spacing:.35em;text-transform:uppercase;color:var(--gold);margin-top:14px;text-align:center}
+.div{width:280px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:28px auto;opacity:.5}
+.stats{display:flex;gap:50px;align-items:center;justify-content:center}
+.stat{text-align:center}
+.sv{font-family:'Bebas Neue',sans-serif;font-size:34px;color:var(--text);line-height:1}
+.sl{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.2em;color:var(--dim);text-transform:uppercase;margin-top:4px}
+.sep{width:1px;height:36px;background:rgba(201,168,76,.2)}
+.prog{width:580px;max-width:90vw;margin-top:36px}
+.pl{display:flex;justify-content:space-between;font-family:'Space Mono',monospace;font-size:10px;color:var(--dim);margin-bottom:8px}
+.pt{width:100%;height:4px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden}
+.pf{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold2));border-radius:2px;transition:width 1s ease;width:0%}
+.ms{text-align:center;font-family:'Space Mono',monospace;font-size:10px;color:var(--gold);letter-spacing:.18em;margin-top:10px}
+.ts{font-family:'Space Mono',monospace;font-size:10px;color:var(--dim);margin-top:14px;text-align:center}
+.ts strong{color:rgba(201,168,76,.6)}
+.bot{position:fixed;bottom:0;left:0;right:0;height:46px;display:flex;align-items:center;justify-content:space-between;padding:0 40px;border-top:1px solid rgba(201,168,76,.1);background:rgba(10,10,10,.97);z-index:10}
+.bl,.br{font-family:'Space Mono',monospace;font-size:10px;color:var(--dim)}
+.bl strong{color:var(--gold)}
+.rt{font-family:'Space Mono',monospace;font-size:11px;color:var(--green)}
 </style>
 </head>
 <body>
-<div class="c tl"></div><div class="c tr"></div><div class="c bl2"></div><div class="c br2"></div>
-<div class="top-bar">
-  <div class="logo">MODULIGN <span>[</span>M<span>]</span> REGISTRY</div>
-  <div class="live-badge"><div class="dot"></div>LIVE · registry.modulign.org</div>
-  <div class="clock" id="clk">--:--:-- UTC</div>
+<div class="top">
+  <div class="logo">MODULIGN [M] REGISTRY</div>
+  <div class="badge"><div class="dot"></div>LIVE · registry.modulign.org</div>
+  <div class="clk" id="clk">--:--:-- UTC</div>
 </div>
-<div class="wrapper">
-  <div class="label-top">Total Classifications</div>
-  <div class="main-number" id="num" data-n="0">LOADING...</div>
-  <div class="label-bottom">DAG-OR · Dimensional Address Grammar</div>
-  <div class="err" id="err"></div>
-  <div class="divider"></div>
-  <div class="stats-row">
-    <div class="stat"><div class="stat-value" id="s-gsi">—</div><div class="stat-label">GSI-IDs Issued</div></div>
+<div class="wrap">
+  <div class="lbl-top">Total Classifications</div>
+  <div class="num" id="num" data-n="0">—</div>
+  <div class="lbl-bot">DAG-OR · Dimensional Address Grammar</div>
+  <div class="div"></div>
+  <div class="stats">
+    <div class="stat"><div class="sv" id="s-gsi">—</div><div class="sl">GSI-IDs</div></div>
     <div class="sep"></div>
-    <div class="stat"><div class="stat-value" id="s-doc">—</div><div class="stat-label">Text Documents</div></div>
+    <div class="stat"><div class="sv" id="s-doc">—</div><div class="sl">Text Docs</div></div>
     <div class="sep"></div>
-    <div class="stat"><div class="stat-value" id="s-rate">—</div><div class="stat-label">Records / Min</div></div>
+    <div class="stat"><div class="sv" id="s-rate">—</div><div class="sl">Rec / Min</div></div>
     <div class="sep"></div>
-    <div class="stat"><div class="stat-value" id="s-eta">—</div><div class="stat-label">ETA to 1M</div></div>
+    <div class="stat"><div class="sv" id="s-eta">—</div><div class="sl">ETA to 1M</div></div>
   </div>
   <div class="prog">
-    <div class="prog-labels"><span>0</span><span id="pct">0% TO 1,000,000</span><span>1,000,000</span></div>
-    <div class="prog-track"><div class="prog-fill" id="fill" style="width:0%"></div></div>
-    <div class="milestone" id="ms">CONNECTING...</div>
+    <div class="pl"><span>0</span><span id="pct">— TO 1,000,000</span><span>1,000,000</span></div>
+    <div class="pt"><div class="pf" id="pf"></div></div>
+    <div class="ms" id="ms">CONNECTING TO REGISTRY...</div>
   </div>
   <div class="ts">Last fetch: <strong id="ts">—</strong> · © 2026 Vincent Gonzalez · modulign.org</div>
 </div>
-<div class="bottom-bar">
+<div class="bot">
   <div class="bl">ORCID: <strong>0009-0004-7283-8598</strong> · <strong>kzjyokiiygryzlxbqwjv</strong></div>
-  <div class="rate" id="rate-bt">↑ CONNECTING...</div>
-  <div class="br">DAG-OR v3.1 · 53 CRONS · 35+ SOURCES</div>
+  <div class="rt" id="rt">↑ CONNECTING...</div>
+  <div class="br">DAG-OR v3.1 · 55 CRONS · 35+ SOURCES</div>
 </div>
 <script>
-const URL = 'https://kzjyokiiygryzlxbqwjv.supabase.co/functions/v1/mgn-public-stats';
-let prev = {n:0, t:null}, hist = [];
-const fmt = n => Number(n).toLocaleString('en-US');
+// Direct REST HEAD request — no edge function, no auth issues
+const BASE = 'https://kzjyokiiygryzlxbqwjv.supabase.co/rest/v1/';
+const KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt6anlva2lpeWdyeXpseGJxd2p2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4NTUwODYsImV4cCI6MjA5MDQzMTA4Nn0.S-fUJNL7Sux_WN3Vt7bd86_xhd1tgKtEVGffK1J2CBM';
+const H    = {'apikey':KEY,'Authorization':'Bearer '+KEY,'Prefer':'count=exact'};
 
-function anim(el, to) {
-  const from = parseInt(el.getAttribute('data-n')) || 0;
-  if (from === to) return;
-  el.setAttribute('data-n', to);
-  el.classList.add('ticking');
-  const t0 = performance.now();
-  (function step(now) {
-    const p = Math.min((now-t0)/900, 1), e = 1-Math.pow(1-p,3);
-    el.textContent = fmt(Math.round(from+(to-from)*e));
-    p < 1 ? requestAnimationFrame(step) : (el.textContent=fmt(to), el.classList.remove('ticking'));
+let prev={n:0,t:null},hist=[],last={cls:0,gsi:0,doc:0};
+
+const fmt = n => n>=1e9?(n/1e9).toFixed(2)+'B':n>=1e6?(n/1e6).toFixed(2)+'M':Number(n).toLocaleString('en-US');
+
+function anim(el,to){
+  const from=parseInt(el.getAttribute('data-n'))||0;
+  if(from===to)return;
+  el.setAttribute('data-n',to);
+  el.classList.add('tick');
+  const t0=performance.now();
+  (function s(now){
+    const p=Math.min((now-t0)/900,1),e=1-Math.pow(1-p,3);
+    el.textContent=fmt(Math.round(from+(to-from)*e));
+    p<1?requestAnimationFrame(s):(el.textContent=fmt(to),el.classList.remove('tick'));
   })(performance.now());
 }
 
-async function tick() {
-  try {
-    // Plain fetch — no headers — CORS fully open on server
-    const r = await fetch(URL);
-    if (!r.ok) throw new Error('HTTP '+r.status);
-    const d = await r.json();
-    if (d.error) throw new Error(d.error);
-
-    const n = d.classifications || 0, now = Date.now();
-    if (prev.t && n > prev.n) hist.push((n-prev.n)/((now-prev.t)/60000));
-    if (hist.length > 8) hist.shift();
-    const rate = hist.length ? hist.reduce((a,b)=>a+b)/hist.length : null;
-
-    anim(document.getElementById('num'), n);
-    document.getElementById('s-gsi').textContent  = fmt(d.gsi_ids||0);
-    document.getElementById('s-doc').textContent  = fmt(d.text_docs||0);
-    if (rate) {
-      document.getElementById('s-rate').textContent = fmt(Math.round(rate));
-      document.getElementById('rate-bt').textContent = '↑ '+fmt(Math.round(rate))+' RECORDS/MIN';
-      const rem = 1000000-n;
-      if (rem > 0) {
-        const m = rem/rate;
-        document.getElementById('s-eta').textContent = m<60?Math.round(m)+'M':m<1440?(m/60).toFixed(1)+'H':(m/1440).toFixed(1)+'D';
-      } else document.getElementById('s-eta').textContent = '🏆';
-    }
-    const pct = Math.min(n/10000, 100).toFixed(1);
-    document.getElementById('fill').style.width = pct+'%';
-    document.getElementById('pct').textContent = pct+'% TO 1,000,000';
-    document.getElementById('ms').textContent =
-      n>=1000000 ? '🏆 1,000,000 ACHIEVED — GUINNESS RECORD CLAIMED' :
-      n>=750000  ? 'MILESTONE: 750K — FINAL STRETCH' :
-      n>=500000  ? 'MILESTONE: 500K PASSED — HALFWAY' :
-      n>=250000  ? 'MILESTONE: 250K PASSED' :
-      n>=100000  ? 'MILESTONE: 100K — RECORD ATTEMPT UNDERWAY' :
-      'RECORD ATTEMPT IN PROGRESS — MODULIGN REGISTRY';
-    document.getElementById('ts').textContent = new Date().toISOString().replace('T',' ').slice(0,19)+' UTC';
-    document.getElementById('err').textContent = '';
-    prev = {n, t:now};
-  } catch(e) {
-    document.getElementById('err').textContent = 'Error: '+e.message+' — retrying in 30s';
-    document.getElementById('ms').textContent = 'RETRYING...';
-    document.getElementById('rate-bt').textContent = '↑ RECONNECTING...';
-  }
+async function getCount(table){
+  const r=await fetch(BASE+table+'?select=*&limit=1',{method:'HEAD',headers:H});
+  const cr=r.headers.get('content-range');
+  return cr?parseInt(cr.split('/')[1])||0:0;
 }
 
-setInterval(() => {
-  const n=new Date(), p=x=>String(x).padStart(2,'0');
-  document.getElementById('clk').textContent=p(n.getUTCHours())+':'+p(n.getUTCMinutes())+':'+p(n.getUTCSeconds())+' UTC';
-},1000);
+async function tick(){
+  try{
+    const [cls,gsi,doc]=await Promise.all([
+      getCount('mgn_classifications'),
+      getCount('mgn_gsi'),
+      getCount('mgn_text_documents')
+    ]);
+    const now=Date.now();
+    if(cls>0){
+      if(prev.t&&cls>prev.n) hist.push((cls-prev.n)/((now-prev.t)/60000));
+      if(hist.length>8)hist.shift();
+      last={cls,gsi,doc};
+    }
+    const c=last.cls,g=last.gsi,d=last.doc;
+    if(c>0){
+      anim(document.getElementById('num'),c);
+      document.getElementById('s-gsi').textContent=fmt(g);
+      document.getElementById('s-doc').textContent=fmt(d);
+      const rate=hist.length?hist.reduce((a,b)=>a+b)/hist.length:null;
+      if(rate){
+        document.getElementById('s-rate').textContent=fmt(Math.round(rate));
+        document.getElementById('rt').textContent='↑ '+fmt(Math.round(rate))+' REC/MIN';
+        const rem=1000000-c;
+        if(rem>0){const m=rem/rate;document.getElementById('s-eta').textContent=m<60?Math.round(m)+'M':m<1440?(m/60).toFixed(1)+'H':(m/1440).toFixed(1)+'D';}
+        else document.getElementById('s-eta').textContent='🏆';
+      }
+      const pct=Math.min(c/10000,100).toFixed(1);
+      document.getElementById('pf').style.width=pct+'%';
+      document.getElementById('pct').textContent=pct+'% TO 1,000,000';
+      document.getElementById('ms').textContent=
+        c>=1000000?'🏆 1,000,000 ACHIEVED — GUINNESS RECORD':
+        c>=750000?'MILESTONE: 750K — FINAL STRETCH':
+        c>=500000?'MILESTONE: 500K PASSED':
+        c>=250000?'MILESTONE: 250K PASSED':
+        c>=100000?'RECORD ATTEMPT UNDERWAY':'RECORD ATTEMPT IN PROGRESS — MODULIGN REGISTRY';
+      document.getElementById('ts').textContent=new Date().toISOString().replace('T',' ').slice(0,19)+' UTC';
+      if(cls>0) prev={n:cls,t:now};
+    }
+  }catch(e){document.getElementById('rt').textContent='↑ RETRYING...';}
+}
+
+setInterval(()=>{const n=new Date(),p=x=>String(x).padStart(2,'0');document.getElementById('clk').textContent=p(n.getUTCHours())+':'+p(n.getUTCMinutes())+':'+p(n.getUTCSeconds())+' UTC';},1000);
 
 tick();
-setInterval(tick, 7500);
+setInterval(tick,8000);
 </script>
 </body>
 </html>
