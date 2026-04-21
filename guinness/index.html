@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Modulign Registry — World Record Evidence</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:wght@400;700&family=Barlow+Condensed:wght@300;400;600;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --gold:#C9A84C;--gold2:#F0C96A;--gold3:rgba(201,168,76,0.10);
+  --dark:#080808;--panel:#0D0D0D;--panel2:#111;
+  --border:rgba(201,168,76,0.15);--border2:rgba(201,168,76,0.08);
+  --text:#E8E4DC;--dim:#666;--dim2:#444;--green:#52E07C;--red:#E05252;
+  --blue:#52A8E0;
+}
+html{scroll-behavior:smooth}
+body{background:var(--dark);color:var(--text);font-family:'Barlow Condensed',sans-serif;line-height:1.5}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(201,168,76,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(201,168,76,0.025) 1px,transparent 1px);background-size:60px 60px;pointer-events:none;z-index:0}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;height:52px;display:flex;align-items:center;justify-content:space-between;padding:0 40px;border-bottom:1px solid var(--border);background:rgba(8,8,8,0.97);z-index:100;backdrop-filter:blur(8px)}
+.nav-logo{display:flex;align-items:center;gap:12px}
+.nav-m{width:32px;height:32px;background:var(--gold);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:18px;color:#000;flex-shrink:0}
+.nav-title{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:.15em;color:var(--gold)}
+.nav-links{display:flex;gap:24px}
+.nav-links a{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.2em;color:var(--dim);text-decoration:none;text-transform:uppercase;transition:color .2s}
+.nav-links a:hover{color:var(--gold)}
+.nav-live{display:flex;align-items:center;gap:6px;font-family:'Space Mono',monospace;font-size:9px;color:var(--green);letter-spacing:.15em}
+.dot{width:6px;height:6px;background:var(--green);border-radius:50%;animation:pulse 1.5s ease-in-out infinite;box-shadow:0 0 6px var(--green)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* HERO */
+.hero{position:relative;z-index:1;padding:120px 40px 80px;text-align:center;border-bottom:1px solid var(--border)}
+.hero-eyebrow{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.35em;color:var(--gold);text-transform:uppercase;margin-bottom:20px}
+.hero-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(52px,10vw,120px);line-height:.88;letter-spacing:.03em;margin-bottom:20px}
+.hero-title .accent{color:var(--gold)}
+.hero-sub{font-family:'Barlow Condensed',sans-serif;font-weight:300;font-size:20px;color:var(--dim);letter-spacing:.08em;max-width:700px;margin:0 auto 48px}
+.hero-stats{display:flex;gap:0;justify-content:center;flex-wrap:wrap;max-width:900px;margin:0 auto}
+.hero-stat{flex:1;min-width:200px;padding:28px 32px;border:1px solid var(--border);border-right:none;text-align:center}
+.hero-stat:last-child{border-right:1px solid var(--border)}
+.hero-stat-n{font-family:'Bebas Neue',sans-serif;font-size:clamp(36px,5vw,56px);color:var(--text);line-height:1;margin-bottom:6px;transition:color .3s}
+.hero-stat-n.tick{color:var(--gold2)}
+.hero-stat-l{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.2em;color:var(--dim);text-transform:uppercase}
+
+/* SECTIONS */
+.section{position:relative;z-index:1;padding:80px 40px;border-bottom:1px solid var(--border2)}
+.section-inner{max-width:1100px;margin:0 auto}
+.section-tag{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.3em;color:var(--gold);text-transform:uppercase;margin-bottom:12px}
+.section-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(32px,5vw,56px);letter-spacing:.04em;margin-bottom:32px;line-height:1}
+
+/* HEADLINE RECORD */
+.headline-record{background:var(--panel);border:1px solid var(--gold);padding:48px;margin-bottom:48px}
+.hl-label{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.3em;color:var(--gold);text-transform:uppercase;margin-bottom:16px}
+.hl-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(24px,4vw,44px);letter-spacing:.04em;color:var(--text);margin-bottom:24px;line-height:1.1}
+.hl-time{font-family:'Bebas Neue',sans-serif;font-size:clamp(48px,8vw,96px);color:var(--gold2);line-height:.9;margin-bottom:8px}
+.hl-time-label{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.2em;color:var(--dim);text-transform:uppercase;margin-bottom:32px}
+.ts-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.ts-item{background:rgba(0,0,0,.4);padding:16px 20px;border-left:2px solid var(--gold)}
+.ts-label{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.2em;color:var(--dim);text-transform:uppercase;margin-bottom:6px}
+.ts-value{font-family:'Space Mono',monospace;font-size:12px;color:var(--gold2)}
+
+/* COMPARISON TABLE */
+.comp-table{width:100%;border-collapse:collapse;margin-bottom:24px}
+.comp-table th{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.2em;color:var(--dim);text-transform:uppercase;padding:12px 16px;text-align:left;border-bottom:1px solid var(--border)}
+.comp-table td{padding:14px 16px;border-bottom:1px solid var(--border2);font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:300}
+.comp-table tr.highlight td{color:var(--gold2);background:var(--gold3)}
+.comp-table tr.highlight td:first-child{border-left:2px solid var(--gold)}
+.badge{display:inline-block;padding:2px 8px;font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.15em;border-radius:2px}
+.badge-green{background:rgba(82,224,124,.15);color:var(--green);border:1px solid rgba(82,224,124,.3)}
+.badge-gold{background:rgba(201,168,76,.15);color:var(--gold);border:1px solid rgba(201,168,76,.3)}
+.badge-dim{background:rgba(255,255,255,.05);color:var(--dim);border:1px solid var(--border2)}
+
+/* RECORDS GRID */
+.records-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;margin-bottom:32px}
+.record-card{background:var(--panel);border:1px solid var(--border);padding:20px;transition:border-color .2s}
+.record-card:hover{border-color:rgba(201,168,76,.4)}
+.record-card.tier1{border-left:3px solid var(--green)}
+.record-card.tier2{border-left:3px solid var(--gold)}
+.record-card.tier3{border-left:3px solid var(--dim2)}
+.rc-num{font-family:'Space Mono',monospace;font-size:9px;color:var(--dim);letter-spacing:.15em;margin-bottom:8px}
+.rc-title{font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:16px;color:var(--text);margin-bottom:8px;line-height:1.3}
+.rc-claim{font-family:'Space Mono',monospace;font-size:10px;color:var(--gold);letter-spacing:.08em;margin-bottom:8px}
+.rc-status{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.15em}
+.rc-status.achieved{color:var(--green)}
+.rc-status.progress{color:var(--gold)}
+.rc-status.pending{color:var(--dim)}
+
+/* EVIDENCE BLOCKS */
+.evidence-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:32px}
+.ev-block{background:var(--panel);border:1px solid var(--border);padding:24px}
+.ev-title{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.2em;color:var(--gold);text-transform:uppercase;margin-bottom:16px;padding-bottom:8px;border-bottom:1px solid var(--border2)}
+.ev-row{display:flex;justify-content:space-between;align-items:flex-start;padding:8px 0;border-bottom:1px solid var(--border2)}
+.ev-row:last-child{border-bottom:none}
+.ev-key{font-family:'Space Mono',monospace;font-size:9px;color:var(--dim);letter-spacing:.1em;flex:1}
+.ev-val{font-family:'Space Mono',monospace;font-size:10px;color:var(--text);text-align:right;flex:1.5;word-break:break-all}
+.ev-val.gold{color:var(--gold2)}
+
+/* SQL BLOCK */
+.sql-block{background:#000;border:1px solid var(--border);padding:24px;margin-bottom:16px;overflow-x:auto}
+.sql-label{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.2em;color:var(--dim);text-transform:uppercase;margin-bottom:12px}
+pre{font-family:'Space Mono',monospace;font-size:11px;color:#88c0a8;line-height:1.7;white-space:pre-wrap;word-break:break-word}
+.sql-comment{color:var(--dim)}
+.sql-keyword{color:var(--gold)}
+.sql-string{color:#a8c888}
+
+/* API ENDPOINT */
+.api-box{background:var(--panel);border:1px solid var(--green);padding:20px 24px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.api-label{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.2em;color:var(--green);text-transform:uppercase;margin-bottom:4px}
+.api-url{font-family:'Space Mono',monospace;font-size:11px;color:var(--text)}
+.api-note{font-family:'Space Mono',monospace;font-size:9px;color:var(--dim);letter-spacing:.1em}
+.copy-btn{background:transparent;border:1px solid var(--border);padding:8px 14px;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.15em;color:var(--dim);cursor:pointer;transition:all .2s;white-space:nowrap}
+.copy-btn:hover{border-color:var(--green);color:var(--green)}
+.copy-btn.copied{border-color:var(--green);color:var(--green)}
+
+/* DOCS TABLE */
+.docs-table{width:100%;border-collapse:collapse}
+.docs-table th{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.2em;color:var(--dim);text-transform:uppercase;padding:10px 16px;text-align:left;border-bottom:1px solid var(--border)}
+.docs-table td{padding:12px 16px;border-bottom:1px solid var(--border2);font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:300}
+.docs-table a{color:var(--gold);text-decoration:none}
+.docs-table a:hover{color:var(--gold2)}
+
+/* FOOTER */
+footer{position:relative;z-index:1;padding:40px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px}
+.footer-left{font-family:'Space Mono',monospace;font-size:9px;color:var(--dim);letter-spacing:.12em;line-height:1.8}
+.footer-left strong{color:var(--gold)}
+.footer-right{font-family:'Space Mono',monospace;font-size:9px;color:var(--dim);letter-spacing:.12em;text-align:right;line-height:1.8}
+
+/* DIVIDER */
+.div{width:100%;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:.3;margin:40px 0}
+
+/* RESPONSIVE */
+@media(max-width:700px){
+  nav,footer,.hero,.section{padding-left:20px;padding-right:20px}
+  .ts-grid,.evidence-grid{grid-template-columns:1fr}
+  .hero-stats{flex-direction:column}
+  .hero-stat{border-right:1px solid var(--border) !important}
+  .nav-links{display:none}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">
+    <div class="nav-m">[M]</div>
+    <div class="nav-title">Modulign Registry</div>
+  </div>
+  <div class="nav-links">
+    <a href="#records">Records</a>
+    <a href="#evidence">Evidence</a>
+    <a href="#verify">Verify</a>
+    <a href="#publications">Publications</a>
+    <a href="#applicant">Applicant</a>
+  </div>
+  <div class="nav-live"><div class="dot"></div>LIVE REGISTRY</div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-eyebrow">Guinness World Records — Official Evidence Package</div>
+  <h1 class="hero-title">WORLD<br><span class="accent">RECORD</span><br>EVIDENCE</h1>
+  <p class="hero-sub">This page is the live, self-updating, independently verifiable evidence package for multiple Guinness World Records set by Vincent Gonzalez using the Modulign Registry.</p>
+  <div class="hero-stats">
+    <div class="hero-stat">
+      <div class="hero-stat-n" id="h-cls" data-n="0">—</div>
+      <div class="hero-stat-l">Classifications</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-n" id="h-gsi" data-n="0">—</div>
+      <div class="hero-stat-l">GSI-IDs Minted</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-n" id="h-doc" data-n="0">—</div>
+      <div class="hero-stat-l">Text Documents</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-n" id="h-upd">—</div>
+      <div class="hero-stat-l">Last Updated</div>
+    </div>
+  </div>
+</div>
+
+<!-- HEADLINE RECORD -->
+<div class="section" id="records">
+  <div class="section-inner">
+    <div class="section-tag">Primary Record — Flagship Claim</div>
+    <div class="section-title">RECORD #1</div>
+
+    <div class="headline-record">
+      <div class="hl-label">⭐ Guinness World Record Claim · Primary Application</div>
+      <div class="hl-title">Fastest time for an individual to create 1,000,000 structured scientific classifications of observable phenomena</div>
+      <div class="hl-time">12H 30M 16S</div>
+      <div class="hl-time-label">Elapsed from pipeline start to 1,000,000th classification</div>
+      <div class="ts-grid">
+        <div class="ts-item">
+          <div class="ts-label">Pipeline Start</div>
+          <div class="ts-value">2026-04-20 01:30:03.077596 UTC</div>
+        </div>
+        <div class="ts-item">
+          <div class="ts-label">Record #1,000,000</div>
+          <div class="ts-value">2026-04-20 14:00:19.669311 UTC</div>
+        </div>
+        <div class="ts-item">
+          <div class="ts-label">Classification ID</div>
+          <div class="ts-value">ebadc258-7c02-44e8-abd8-24592d8ca4ed</div>
+        </div>
+        <div class="ts-item">
+          <div class="ts-label">Domain at 1M</div>
+          <div class="ts-value">BIO·GEN — Biological / Genetic</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- COMPARISON TABLE -->
+    <div class="section-tag">Context — Why This Is Unprecedented</div>
+    <table class="comp-table">
+      <thead>
+        <tr>
+          <th>Project</th>
+          <th>Observations</th>
+          <th>Time to 1M</th>
+          <th>Contributors</th>
+          <th>Funding</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Galaxy Zoo</td>
+          <td>1M classifications</td>
+          <td>~6 months</td>
+          <td>150,000 volunteers</td>
+          <td>Institutional</td>
+        </tr>
+        <tr>
+          <td>iNaturalist</td>
+          <td>1M observations</td>
+          <td>~3 years</td>
+          <td>Thousands of users</td>
+          <td>Institutional</td>
+        </tr>
+        <tr>
+          <td>eBird</td>
+          <td>1M checklists</td>
+          <td>~5 years</td>
+          <td>Tens of thousands</td>
+          <td>Cornell Lab / NSF</td>
+        </tr>
+        <tr>
+          <td>GBIF</td>
+          <td>1M occurrences</td>
+          <td>~4 years</td>
+          <td>Institutional consortium</td>
+          <td>Multi-government</td>
+        </tr>
+        <tr class="highlight">
+          <td><strong>Modulign Registry ⭐</strong></td>
+          <td><strong>1M classifications</strong></td>
+          <td><strong>12 hours 30 minutes</strong></td>
+          <td><strong>1 person</strong></td>
+          <td><strong>$0 (self-funded)</strong></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="div"></div>
+
+    <!-- ALL RECORDS -->
+    <div class="section-tag">Complete Record Inventory — 21 Claims</div>
+    <div class="section-title">ALL RECORDS</div>
+
+    <div class="records-grid">
+
+      <div class="record-card tier1">
+        <div class="rc-num">RECORD 1 · WAVE 1</div>
+        <div class="rc-title">Fastest time for an individual to create 1,000,000 structured scientific classifications</div>
+        <div class="rc-claim">12 HOURS, 30 MINUTES, 16 SECONDS</div>
+        <span class="badge badge-green rc-status achieved">✓ ACHIEVED · APPLY NOW</span>
+      </div>
+
+      <div class="record-card tier1">
+        <div class="rc-num">RECORD 2 · WAVE 1</div>
+        <div class="rc-title">Fastest time for an individual to create 2,000,000 structured scientific classifications</div>
+        <div class="rc-claim">24 HOURS, 54 MINUTES, 51 SECONDS</div>
+        <span class="badge badge-green rc-status achieved">✓ ACHIEVED · APPLY NOW</span>
+      </div>
+
+      <div class="record-card tier1">
+        <div class="rc-num">RECORD 3 · WAVE 1</div>
+        <div class="rc-title">Fastest successive million-classification milestones — 2nd million faster than 1st</div>
+        <div class="rc-claim">1M→2M IN 12H 24M 35S (6 MIN FASTER)</div>
+        <span class="badge badge-green rc-status achieved">✓ ACHIEVED · APPLY NOW</span>
+      </div>
+
+      <div class="record-card tier1">
+        <div class="rc-num">RECORD 4 · WAVE 1</div>
+        <div class="rc-title">Most scientific data sources integrated into a single database by an individual</div>
+        <div class="rc-claim">35+ AUTHORITATIVE SOURCE FAMILIES</div>
+        <span class="badge badge-green rc-status achieved">✓ ACHIEVED · APPLY NOW</span>
+      </div>
+
+      <div class="record-card tier1">
+        <div class="rc-num">RECORD 5 · WAVE 1</div>
+        <div class="rc-title">Largest scientific database created without institutional funding by an individual</div>
+        <div class="rc-claim" id="rc5-count">2,518,186+ CLASSIFICATIONS · $0 FUNDING</div>
+        <span class="badge badge-green rc-status achieved">✓ ACHIEVED · APPLY NOW</span>
+      </div>
+
+      <div class="record-card tier1">
+        <div class="rc-num">RECORD 6 · WAVE 1</div>
+        <div class="rc-title">Most classifications created in a single calendar day by an individual</div>
+        <div class="rc-claim">1,426,650 ON APRIL 20 2026 UTC</div>
+        <span class="badge badge-green rc-status achieved">✓ ACHIEVED · APPLY NOW</span>
+      </div>
+
+      <div class="record-card tier1">
+        <div class="rc-num">RECORD 7 · WAVE 1</div>
+        <div class="rc-title">Most classifications created in a single hour by an individual</div>
+        <div class="rc-claim">118,456 IN HOUR STARTING 2026-04-20 12:00 UTC</div>
+        <span class="badge badge-green rc-status achieved">✓ ACHIEVED · APPLY NOW</span>
+      </div>
+
+      <div class="record-card tier1">
+        <div class="rc-num">RECORD 8 · WAVE 1</div>
+        <div class="rc-title">Fastest time from academic framework publication to 1,000,000 classified observations</div>
+        <div class="rc-claim">ZENODO DOI TIMESTAMP → 1M RECORD TIMESTAMP</div>
+        <span class="badge badge-green rc-status achieved">✓ ACHIEVED · APPLY NOW</span>
+      </div>
+
+      <div class="record-card tier1">
+        <div class="rc-num">RECORD 9 · WAVE 1</div>
+        <div class="rc-title">Highest classification-to-team-size ratio in a database exceeding 1M entries</div>
+        <div class="rc-claim">2,518,186 : 1 (ONE PERSON)</div>
+        <span class="badge badge-green rc-status achieved">✓ ACHIEVED · APPLY NOW</span>
+      </div>
+
+      <div class="record-card tier1">
+        <div class="rc-num">RECORD 10 · WAVE 1</div>
+        <div class="rc-title">Fastest time for individual to create 1,000,000 text documents in a classified database</div>
+        <div class="rc-claim" id="rc10-count">1,069,977+ TEXT DOCUMENTS</div>
+        <span class="badge badge-green rc-status achieved">✓ ACHIEVED · APPLY NOW</span>
+      </div>
+
+      <div class="record-card tier2">
+        <div class="rc-num">RECORD 11 · WAVE 2</div>
+        <div class="rc-title">Fastest time for an individual to create 5,000,000 structured scientific classifications</div>
+        <div class="rc-claim">IN PROGRESS — ~2 DAYS REMAINING</div>
+        <span class="badge badge-gold rc-status progress">⟳ IN PROGRESS</span>
+      </div>
+
+      <div class="record-card tier2">
+        <div class="rc-num">RECORD 12 · WAVE 2</div>
+        <div class="rc-title">Fastest database doubling — 1,000,000 to 2,000,000 records by an individual</div>
+        <div class="rc-claim">12 HOURS, 24 MINUTES, 35 SECONDS</div>
+        <span class="badge badge-green rc-status achieved">✓ ACHIEVED · APPLY WAVE 2</span>
+      </div>
+
+      <div class="record-card tier2">
+        <div class="rc-num">RECORD 13 · WAVE 2</div>
+        <div class="rc-title">Lowest cost per scientific classification in a database exceeding 1,000,000 entries</div>
+        <div class="rc-claim">EST. ~$0.00008 PER CLASSIFICATION</div>
+        <span class="badge badge-gold rc-status progress">⟳ DOCUMENT COSTS</span>
+      </div>
+
+      <div class="record-card tier2">
+        <div class="rc-num">RECORD 14 · WAVE 2</div>
+        <div class="rc-title">Most scientific domains simultaneously covered in a solo-built classification system</div>
+        <div class="rc-claim">11 DOMAINS · 84 SUBDOMAINS</div>
+        <span class="badge badge-green rc-status achieved">✓ ACHIEVED · APPLY WAVE 2</span>
+      </div>
+
+      <div class="record-card tier2">
+        <div class="rc-num">RECORD 15 · WAVE 2</div>
+        <div class="rc-title">Most unique persistent scientific identifiers (GSI-IDs) created by an individual</div>
+        <div class="rc-claim" id="rc15-count">2,573,091+ GSI-IDs</div>
+        <span class="badge badge-green rc-status achieved">✓ GROWING · APPLY AT 5M</span>
+      </div>
+
+      <div class="record-card tier2">
+        <div class="rc-num">RECORD 16 · WAVE 2</div>
+        <div class="rc-title">Most Wikipedia language editions ingested into a single database by an individual</div>
+        <div class="rc-claim">15 LANGUAGES (EN, DE, FR, ES, PT, IT, RU, JA, ZH, AR, NL, PL, UK, SV, FI)</div>
+        <span class="badge badge-green rc-status achieved">✓ ACHIEVED</span>
+      </div>
+
+      <div class="record-card tier2">
+        <div class="rc-num">RECORD 17 · WAVE 2</div>
+        <div class="rc-title">Most million-classification milestones reached in a single week by an individual</div>
+        <div class="rc-claim">2M+ CROSSED · 5M+ PROJECTED THIS WEEK</div>
+        <span class="badge badge-gold rc-status progress">⟳ IN PROGRESS</span>
+      </div>
+
+      <div class="record-card tier2">
+        <div class="rc-num">RECORD 18 · WAVE 3</div>
+        <div class="rc-title">First classification system to address the Gettier Problem through empirical observation at scale</div>
+        <div class="rc-claim">ZENODO DOI 10.5281/ZENODO.19432926 · 2.5M+ OBSERVATIONS</div>
+        <span class="badge badge-gold rc-status progress">⟳ PHILOSOPHICAL FIRST</span>
+      </div>
+
+      <div class="record-card tier2">
+        <div class="rc-num">RECORD 19 · WAVE 3</div>
+        <div class="rc-title">First classification system designed for legal evidence admissibility at million-scale</div>
+        <div class="rc-claim">ZENODO DOI 10.5281/ZENODO.19642437</div>
+        <span class="badge badge-gold rc-status progress">⟳ LEGAL FIRST</span>
+      </div>
+
+      <div class="record-card tier2">
+        <div class="rc-num">RECORD 20 · WAVE 3</div>
+        <div class="rc-title">First million-scale classification system with published formal logic proofs</div>
+        <div class="rc-claim">ZENODO DOI 10.5281/ZENODO.19350848</div>
+        <span class="badge badge-gold rc-status progress">⟳ LOGICAL FIRST</span>
+      </div>
+
+      <div class="record-card tier1">
+        <div class="rc-num">RECORD 21 · META-RECORD · ULTIMATE GOAL</div>
+        <div class="rc-title">Most Guinness World Records held for a single project by an independent scholar</div>
+        <div class="rc-claim">TARGET: 10+ CONFIRMED RECORDS</div>
+        <span class="badge badge-dim rc-status pending">◎ PENDING 5+ CONFIRMATIONS</span>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- EVIDENCE -->
+<div class="section" id="evidence">
+  <div class="section-inner">
+    <div class="section-tag">Immutable Timestamped Evidence</div>
+    <div class="section-title">PRIMARY EVIDENCE</div>
+
+    <div class="evidence-grid">
+      <div class="ev-block">
+        <div class="ev-title">Key Timestamps (UTC)</div>
+        <div class="ev-row"><span class="ev-key">Pipeline Start</span><span class="ev-val gold">2026-04-20 01:30:03.077596</span></div>
+        <div class="ev-row"><span class="ev-key">Record #1,000,000</span><span class="ev-val gold">2026-04-20 14:00:19.669311</span></div>
+        <div class="ev-row"><span class="ev-key">Record #2,000,000</span><span class="ev-val gold">2026-04-21 02:24:55.000</span></div>
+        <div class="ev-row"><span class="ev-key">0 → 1M Elapsed</span><span class="ev-val gold">12h 30m 16s</span></div>
+        <div class="ev-row"><span class="ev-key">1M → 2M Elapsed</span><span class="ev-val gold">12h 24m 35s (FASTER)</span></div>
+        <div class="ev-row"><span class="ev-key">0 → 2M Elapsed</span><span class="ev-val gold">24h 54m 51s</span></div>
+      </div>
+      <div class="ev-block">
+        <div class="ev-title">Record #1,000,000 Details</div>
+        <div class="ev-row"><span class="ev-key">Classification ID</span><span class="ev-val">ebadc258-7c02...</span></div>
+        <div class="ev-row"><span class="ev-key">Domain</span><span class="ev-val">BIO (Biological)</span></div>
+        <div class="ev-row"><span class="ev-key">Subdomain</span><span class="ev-val">GEN (Genetic)</span></div>
+        <div class="ev-row"><span class="ev-key">Canonical Code</span><span class="ev-val">MGN·BIO·GEN·SR/XX/..:DAT</span></div>
+        <div class="ev-row"><span class="ev-key">Source</span><span class="ev-val">Wikidata (wikidata.org)</span></div>
+      </div>
+      <div class="ev-block">
+        <div class="ev-title">Taxonomy Statistics</div>
+        <div class="ev-row"><span class="ev-key">Distinct Domains</span><span class="ev-val gold">11</span></div>
+        <div class="ev-row"><span class="ev-key">Distinct Subdomains</span><span class="ev-val gold">84</span></div>
+        <div class="ev-row"><span class="ev-key">Distinct Canonical Codes</span><span class="ev-val gold">7,757</span></div>
+        <div class="ev-row"><span class="ev-key">Source Families</span><span class="ev-val gold">35+</span></div>
+        <div class="ev-row"><span class="ev-key">Wikipedia Languages</span><span class="ev-val gold">15</span></div>
+      </div>
+      <div class="ev-block">
+        <div class="ev-title">Peak Performance</div>
+        <div class="ev-row"><span class="ev-key">Best Hour</span><span class="ev-val gold">118,456 classifications</span></div>
+        <div class="ev-row"><span class="ev-key">Hour Start</span><span class="ev-val">2026-04-20 12:00 UTC</span></div>
+        <div class="ev-row"><span class="ev-key">Best Calendar Day</span><span class="ev-val gold">1,426,650 classifications</span></div>
+        <div class="ev-row"><span class="ev-key">Day</span><span class="ev-val">April 20, 2026 UTC</span></div>
+        <div class="ev-row"><span class="ev-key">Avg Rate (record window)</span><span class="ev-val">~47,442/hour</span></div>
+      </div>
+    </div>
+
+    <!-- SOURCE TABLE -->
+    <div class="section-tag">Data Sources During Record Window</div>
+    <table class="comp-table">
+      <thead>
+        <tr><th>Source Family</th><th>Ingest Runs</th><th>Records Minted</th><th>Institution</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Wikidata</td><td>95</td><td>315,507</td><td>Wikimedia Foundation</td></tr>
+        <tr><td>Wikipedia (×15 languages)</td><td>516</td><td>248,200</td><td>Wikimedia Foundation</td></tr>
+        <tr><td>GBIF</td><td>41</td><td>11,700</td><td>Global Biodiversity Info Facility</td></tr>
+        <tr><td>Internet Archive</td><td>20</td><td>8,924</td><td>Internet Archive</td></tr>
+        <tr><td>iNaturalist</td><td>14</td><td>2,747</td><td>California Academy of Sciences</td></tr>
+        <tr><td>US Congress</td><td>10</td><td>2,450</td><td>US Government</td></tr>
+        <tr><td>USGS</td><td>4</td><td>741</td><td>US Geological Survey</td></tr>
+        <tr><td>OpenStreetMap</td><td>1</td><td>500</td><td>OpenStreetMap Foundation</td></tr>
+        <tr><td>arXiv</td><td>11</td><td>494</td><td>Cornell University</td></tr>
+        <tr><td>NASA</td><td>3</td><td>210</td><td>NASA</td></tr>
+        <tr><td>EMSC (Seismic)</td><td>2</td><td>160</td><td>European Mediterranean Seismological Centre</td></tr>
+        <tr><td>NCEI (Climate)</td><td>1</td><td>100</td><td>NOAA</td></tr>
+        <tr><td>OpenAlex</td><td>1</td><td>100</td><td>OurResearch</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- VERIFY -->
+<div class="section" id="verify">
+  <div class="section-inner">
+    <div class="section-tag">Independent Verification</div>
+    <div class="section-title">VERIFY NOW</div>
+
+    <div class="api-box">
+      <div>
+        <div class="api-label">Live Public API — No Authentication Required</div>
+        <div class="api-url">https://kzjyokiiygryzlxbqwjv.supabase.co/functions/v1/mgn-public-stats</div>
+        <div class="api-note">Returns: { "classifications": N, "gsi_ids": N, "text_docs": N } · Updated in real-time</div>
+      </div>
+      <button class="copy-btn" onclick="copyUrl('https://kzjyokiiygryzlxbqwjv.supabase.co/functions/v1/mgn-public-stats',this)">COPY URL</button>
+    </div>
+
+    <div class="api-box" style="border-color:var(--gold)">
+      <div>
+        <div class="api-label" style="color:var(--gold)">Live Counter — Public Display</div>
+        <div class="api-url">https://modulign.org/stream/index.html</div>
+        <div class="api-note">Real-time animated counter visible to any observer</div>
+      </div>
+      <button class="copy-btn" onclick="copyUrl('https://modulign.org/stream/index.html',this)">COPY URL</button>
+    </div>
+
+    <div class="div"></div>
+
+    <div class="section-tag">SQL Verification Queries — Run Against Live Database</div>
+
+    <div class="sql-block">
+      <div class="sql-label">Query 1 — Current Total Count</div>
+      <pre><span class="sql-comment">-- Returns live classification total</span>
+<span class="sql-keyword">SELECT</span> key, value, updated_at
+<span class="sql-keyword">FROM</span> mgn_stats_cache
+<span class="sql-keyword">ORDER BY</span> key;</pre>
+    </div>
+
+    <div class="sql-block">
+      <div class="sql-label">Query 2 — Pipeline Start Timestamp</div>
+      <pre><span class="sql-comment">-- Returns exact pipeline start (first ingest run)</span>
+<span class="sql-keyword">SELECT</span> <span class="sql-keyword">MIN</span>(started_at) <span class="sql-keyword">AS</span> pipeline_start
+<span class="sql-keyword">FROM</span> mgn_ingest_log
+<span class="sql-keyword">WHERE</span> started_at >= <span class="sql-string">'2026-04-17 00:00:00+00'</span>;
+<span class="sql-comment">-- Expected: 2026-04-20 01:30:03.077596+00</span></pre>
+    </div>
+
+    <div class="sql-block">
+      <div class="sql-label">Query 3 — Elapsed Time Calculation</div>
+      <pre><span class="sql-comment">-- Calculates exact elapsed time from pipeline start to 1M</span>
+<span class="sql-keyword">SELECT</span>
+  <span class="sql-keyword">EXTRACT</span>(EPOCH <span class="sql-keyword">FROM</span> (
+    <span class="sql-string">'2026-04-20 14:00:19.669+00'</span>::timestamptz -
+    <span class="sql-string">'2026-04-20 01:30:03+00'</span>::timestamptz
+  ))/3600 <span class="sql-keyword">AS</span> elapsed_hours;
+<span class="sql-comment">-- Expected: 12.5046 hours (12h 30m 16s)</span></pre>
+    </div>
+
+    <div class="sql-block">
+      <div class="sql-label">Query 4 — Source Diversity</div>
+      <pre><span class="sql-comment">-- Lists all source families with record counts</span>
+<span class="sql-keyword">SELECT</span>
+  <span class="sql-keyword">SPLIT_PART</span>(source_slug, <span class="sql-string">'-'</span>, 1) <span class="sql-keyword">AS</span> source_family,
+  <span class="sql-keyword">COUNT</span>(*) <span class="sql-keyword">AS</span> runs,
+  <span class="sql-keyword">SUM</span>(records_minted) <span class="sql-keyword">AS</span> minted
+<span class="sql-keyword">FROM</span> mgn_ingest_log
+<span class="sql-keyword">WHERE</span> started_at <span class="sql-keyword">BETWEEN</span>
+  <span class="sql-string">'2026-04-20 01:30:00+00'</span> <span class="sql-keyword">AND</span>
+  <span class="sql-string">'2026-04-20 14:00:20+00'</span>
+  <span class="sql-keyword">AND</span> status <span class="sql-keyword">IN</span> (<span class="sql-string">'SUCCESS'</span>,<span class="sql-string">'PARTIAL'</span>)
+  <span class="sql-keyword">AND</span> records_minted > 0
+<span class="sql-keyword">GROUP BY</span> source_family
+<span class="sql-keyword">ORDER BY</span> minted <span class="sql-keyword">DESC</span>;</pre>
+    </div>
+
+    <div class="sql-block">
+      <div class="sql-label">Query 5 — Taxonomy Statistics</div>
+      <pre><span class="sql-comment">-- Counts distinct taxonomic categories</span>
+<span class="sql-keyword">SELECT</span>
+  <span class="sql-keyword">COUNT</span>(<span class="sql-keyword">DISTINCT</span> canonical_code) <span class="sql-keyword">AS</span> distinct_codes,
+  <span class="sql-keyword">COUNT</span>(<span class="sql-keyword">DISTINCT</span> domain) <span class="sql-keyword">AS</span> distinct_domains,
+  <span class="sql-keyword">COUNT</span>(<span class="sql-keyword">DISTINCT</span> subdomain) <span class="sql-keyword">AS</span> distinct_subdomains
+<span class="sql-keyword">FROM</span> mgn_classifications;
+<span class="sql-comment">-- Expected: 7757 codes, 11 domains, 84 subdomains</span></pre>
+    </div>
+
+  </div>
+</div>
+
+<!-- PUBLICATIONS -->
+<div class="section" id="publications">
+  <div class="section-inner">
+    <div class="section-tag">Published Methodology — All Predate the Record</div>
+    <div class="section-title">ACADEMIC RECORD</div>
+    <p style="font-family:'Barlow Condensed',sans-serif;font-weight:300;font-size:16px;color:var(--dim);margin-bottom:24px;letter-spacing:.05em">All publications below are timestamped on Zenodo before the record was set on April 20, 2026. This proves the intellectual framework existed independently of and prior to the data. Manuscripts are also under active peer review at <em>Analysis</em> and <em>Mind</em> (Oxford University Press).</p>
+    <table class="docs-table">
+      <thead>
+        <tr><th>Publication</th><th>Zenodo DOI</th><th>Significance</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Modulign Standard v3.0 (DAG-OR specification)</td>
+          <td><a href="https://doi.org/10.5281/zenodo.19348704" target="_blank">10.5281/zenodo.19348704</a></td>
+          <td>Core framework — foundational prior art</td>
+        </tr>
+        <tr>
+          <td>The Formal Logic of Modulign</td>
+          <td><a href="https://doi.org/10.5281/zenodo.19350848" target="_blank">10.5281/zenodo.19350848</a></td>
+          <td>Formal proofs of taxonomy consistency</td>
+        </tr>
+        <tr>
+          <td>CS Systems Architecture</td>
+          <td><a href="https://doi.org/10.5281/zenodo.19642557" target="_blank">10.5281/zenodo.19642557</a></td>
+          <td>Technical implementation documentation</td>
+        </tr>
+        <tr>
+          <td>Inter-Rater Reliability (κ = 0.847)</td>
+          <td><a href="https://doi.org/10.5281/zenodo.19643322" target="_blank">10.5281/zenodo.19643322</a></td>
+          <td>Statistical validation of classification quality</td>
+        </tr>
+        <tr>
+          <td>Chain of Custody Formalisation (^EVID)</td>
+          <td><a href="https://doi.org/10.5281/zenodo.19642385" target="_blank">10.5281/zenodo.19642385</a></td>
+          <td>First million-scale system with custody framework</td>
+        </tr>
+        <tr>
+          <td>AI-Generated Evidence Admissibility</td>
+          <td><a href="https://doi.org/10.5281/zenodo.19642437" target="_blank">10.5281/zenodo.19642437</a></td>
+          <td>Legal admissibility framework</td>
+        </tr>
+        <tr>
+          <td>Modulign as Evidence (Legal Treatise)</td>
+          <td><a href="https://doi.org/10.5281/zenodo.19351250" target="_blank">10.5281/zenodo.19351250</a></td>
+          <td>Legal applications of classification</td>
+        </tr>
+        <tr>
+          <td>Classification Deficit — EU AI Act Article 50</td>
+          <td><a href="https://doi.org/10.5281/zenodo.19578571" target="_blank">10.5281/zenodo.19578571</a></td>
+          <td>Regulatory policy application</td>
+        </tr>
+        <tr>
+          <td>Structural Dissolution of the Gettier Problem</td>
+          <td><a href="https://doi.org/10.5281/zenodo.19432926" target="_blank">10.5281/zenodo.19432926</a></td>
+          <td>63-year open problem in philosophy — dissolved</td>
+        </tr>
+        <tr>
+          <td>AUT Certification Framework</td>
+          <td><a href="https://doi.org/10.5281/zenodo.19559602" target="_blank">10.5281/zenodo.19559602</a></td>
+          <td>Automated classifier certification standard</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- APPLICANT -->
+<div class="section" id="applicant">
+  <div class="section-inner">
+    <div class="section-tag">Applicant Information</div>
+    <div class="section-title">VINCENT GONZALEZ</div>
+    <div class="evidence-grid">
+      <div class="ev-block">
+        <div class="ev-title">Identity</div>
+        <div class="ev-row"><span class="ev-key">Name</span><span class="ev-val">Vincent Gonzalez</span></div>
+        <div class="ev-row"><span class="ev-key">Role</span><span class="ev-val">Independent Scholar</span></div>
+        <div class="ev-row"><span class="ev-key">Location</span><span class="ev-val">Cape Coral, Florida, USA</span></div>
+        <div class="ev-row"><span class="ev-key">Email</span><span class="ev-val">VinceGonzalez@me.com</span></div>
+        <div class="ev-row"><span class="ev-key">ORCID</span><span class="ev-val">0009-0004-7283-8598</span></div>
+        <div class="ev-row"><span class="ev-key">Website</span><span class="ev-val">modulign.org</span></div>
+      </div>
+      <div class="ev-block">
+        <div class="ev-title">Record Conditions</div>
+        <div class="ev-row"><span class="ev-key">Institutional affiliation</span><span class="ev-val">None</span></div>
+        <div class="ev-row"><span class="ev-key">External funding</span><span class="ev-val">None ($0)</span></div>
+        <div class="ev-row"><span class="ev-key">Team members</span><span class="ev-val">1 (sole operator)</span></div>
+        <div class="ev-row"><span class="ev-key">AI tools used</span><span class="ev-val">Yes — disclosed transparently</span></div>
+        <div class="ev-row"><span class="ev-key">AI role</span><span class="ev-val">Code syntax, prose editing (tool use)</span></div>
+        <div class="ev-row"><span class="ev-key">Framework designed by</span><span class="ev-val">Vincent Gonzalez</span></div>
+      </div>
+    </div>
+
+    <div style="background:var(--panel);border:1px solid var(--border);padding:24px;margin-top:24px">
+      <div class="ev-title">AI Disclosure Statement</div>
+      <p style="font-family:'Barlow Condensed',sans-serif;font-weight:300;font-size:16px;color:var(--dim);line-height:1.7;letter-spacing:.04em">AI language models were used as development tools during this project — analogous to a programmer using a compiler, or an astronomer using a telescope. AI did not design the DAG-OR classification framework, select the data sources, conceive of the Modulign Standard, or author the published papers. AI assisted with code syntax and prose editing. The intellectual framework, system architecture, source selection, and all strategic decisions were made solely by Vincent Gonzalez. The record is his achievement.</p>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-left">
+    <strong>© 2026 Vincent Gonzalez</strong> · modulign.org<br>
+    ORCID: 0009-0004-7283-8598 · Cape Coral, Florida, USA<br>
+    Evidence package last updated: <span id="footer-ts">—</span>
+  </div>
+  <div class="footer-right">
+    DAG-OR v3.1 · Modulign Standard<br>
+    Supabase Project: kzjyokiiygryzlxbqwjv<br>
+    Evidence page: modulign.org/guinness
+  </div>
+</footer>
+
+<script>
+// ============================================================
+// Modulign Guinness Evidence Page
+// Live stats from public API — no auth required
+// © 2026 Vincent Gonzalez · modulign.org
+// ============================================================
+
+var STATS_URL = 'https://kzjyokiiygryzlxbqwjv.supabase.co/functions/v1/mgn-public-stats';
+var last = null;
+
+function fmt(n) {
+  if (!n) return '—';
+  if (n >= 1e9) return (n/1e9).toFixed(2) + 'B';
+  if (n >= 1e6) return (n/1e6).toFixed(2) + 'M';
+  return Number(n).toLocaleString('en-US');
+}
+
+function fmtShort(n) {
+  if (!n) return '—';
+  return Number(n).toLocaleString('en-US');
+}
+
+function anim(el, to) {
+  var from = parseInt(el.getAttribute('data-n')) || 0;
+  if (from === to) return;
+  el.setAttribute('data-n', to);
+  el.classList.add('tick');
+  var t0 = performance.now();
+  (function s(now) {
+    var p = Math.min((now - t0) / 800, 1);
+    var e = 1 - Math.pow(1 - p, 3);
+    el.textContent = fmt(Math.round(from + (to - from) * e));
+    if (p < 1) requestAnimationFrame(s);
+    else { el.textContent = fmt(to); el.classList.remove('tick'); }
+  })(performance.now());
+}
+
+async function tick() {
+  try {
+    var res = await fetch(STATS_URL);
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    var data = await res.json();
+    var cls = data.classifications || 0;
+    var gsi = data.gsi_ids || 0;
+    var doc = data.text_docs || 0;
+    if (cls > 0) {
+      last = data;
+      anim(document.getElementById('h-cls'), cls);
+      anim(document.getElementById('h-gsi'), gsi);
+      anim(document.getElementById('h-doc'), doc);
+      document.getElementById('h-upd').textContent = new Date().toISOString().slice(11,19) + ' UTC';
+      // Update dynamic record claims
+      var rc5 = document.getElementById('rc5-count');
+      if (rc5) rc5.textContent = fmtShort(cls) + '+ CLASSIFICATIONS · $0 FUNDING';
+      var rc10 = document.getElementById('rc10-count');
+      if (rc10) rc10.textContent = fmtShort(doc) + '+ TEXT DOCUMENTS';
+      var rc15 = document.getElementById('rc15-count');
+      if (rc15) rc15.textContent = fmtShort(gsi) + '+ GSI-IDs';
+      var fts = document.getElementById('footer-ts');
+      if (fts) fts.textContent = new Date().toISOString().replace('T',' ').slice(0,19) + ' UTC';
+    }
+  } catch(e) {
+    document.getElementById('h-upd').textContent = 'RETRYING...';
+  }
+}
+
+function copyUrl(url, btn) {
+  navigator.clipboard.writeText(url).then(function() {
+    var orig = btn.textContent;
+    btn.textContent = 'COPIED ✓';
+    btn.classList.add('copied');
+    setTimeout(function() {
+      btn.textContent = orig;
+      btn.classList.remove('copied');
+    }, 2000);
+  });
+}
+
+tick();
+setInterval(tick, 10000);
+</script>
+</body>
+</html>
